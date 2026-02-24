@@ -5,6 +5,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# cache bust
+ARG CACHEBUST=2
 COPY . .
 
 EXPOSE 8000
