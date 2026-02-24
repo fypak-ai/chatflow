@@ -1,9 +1,2 @@
-# Backend — Nixpacks detecta Python pelo runtime.txt
-# Não force nixPkgs aqui; deixe o Nixpacks resolver automaticamente
-# via runtime.txt (mais confiável no Railway)
-
-[phases.install]
-  cmds = ["pip install --upgrade pip", "pip install -r requirements.txt"]
-
 [start]
   cmd = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
