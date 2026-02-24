@@ -1,11 +1,11 @@
-[phases.setup]
-  nixPkgs = ["nodejs_20"]
+# Frontend — Nixpacks detecta Node pelo .node-version
+# Sem forçar nixPkgs para evitar conflitos de versão
 
 [phases.install]
-  cmds = ["npm install"]
+  cmds = ["npm ci"]
 
 [phases.build]
   cmds = ["npm run build"]
 
 [start]
-  cmd = "npx serve -s dist -l $PORT"
+  cmd = "node server.js"
