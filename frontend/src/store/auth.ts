@@ -3,7 +3,9 @@ import { persist } from 'zustand/middleware'
 
 interface AuthState {
   token: string | null
-  setToken: (token: string) => void
+  userId: string | null
+  username: string | null
+  setAuth: (token: string, userId: string, username: string) => void
   logout: () => void
 }
 
@@ -11,8 +13,10 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       token: null,
-      setToken: (token) => set({ token }),
-      logout: () => set({ token: null }),
+      userId: null,
+      username: null,
+      setAuth: (token, userId, username) => set({ token, userId, username }),
+      logout: () => set({ token: null, userId: null, username: null }),
     }),
     { name: 'chatflow-auth' },
   ),
