@@ -13,3 +13,4 @@ anthropicai==0.34.2
 websockets==13.0
 pydantic-settings==2.5.2
 python-dotenv==1.0.1
+aiofiles==24.1.0

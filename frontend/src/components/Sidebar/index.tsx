@@ -13,70 +13,69 @@ interface Channel {
 
 export default function Sidebar({ workspaceId }: { workspaceId: string }) {
   const [channels, setChannels] = useState<Channel[]>([])
+  const [dms, setDms] = useState<Channel[]>([])
   const [showCreate, setShowCreate] = useState(false)
   const setChannel = useChatStore((s) => s.setChannel)
   const activeChannelId = useChatStore((s) => s.activeChannelId)
   const { username, logout } = useAuthStore()
   const navigate = useNavigate()
 
-  const fetchChannels = () =>
+  const fetchChannels = () => {
     api.get(`/api/channels/workspace/${workspaceId}`)
-      .then((r) => setChannels(r.data))
+      .then((r) => setChannels(r.data.filter((c: Channel) => c.type !== 'dm')))
       .catch(() => {})
+    api.get(`/api/dm/workspace/${workspaceId}`)
+      .then((r) => setDms(r.data))
+      .catch(() => {})
+  }
 
   useEffect(() => { fetchChannels() }, [workspaceId])
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
 
   return (
     <>
       <aside className="w-64 bg-gray-800 flex flex-col border-r border-gray-700 flex-shrink-0">
-        {/* Workspace header */}
+        {/* Header */}
         <div className="p-4 border-b border-gray-700">
           <h2 className="font-bold text-lg">ChatFlow</h2>
           <p className="text-xs text-gray-400 truncate">@{username}</p>
         </div>
 
-        {/* Channels */}
         <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
-          <div className="flex items-center justify-between px-2 mb-1">
+          {/* Channels */}
+          <div className="flex items-center justify-between px-2 mb-1 mt-1">
             <span className="text-xs text-gray-400 uppercase tracking-wider">Canais</span>
-            <button
-              onClick={() => setShowCreate(true)}
-              className="text-gray-400 hover:text-white text-lg leading-none"
-              title="Criar canal"
-            >
-              +
-            </button>
+            <button onClick={() => setShowCreate(true)} className="text-gray-400 hover:text-white text-lg leading-none" title="Criar canal">+</button>
           </div>
-
           {channels.map((ch) => (
-            <button
-              key={ch.id}
-              onClick={() => setChannel(ch.id)}
+            <button key={ch.id} onClick={() => setChannel(ch.id)}
               className={`w-full text-left px-3 py-1.5 rounded text-sm transition flex items-center gap-1.5 ${
-                activeChannelId === ch.id
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700'
+                activeChannelId === ch.id ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'
               }`}
             >
-              <span className="opacity-60">{ch.type === 'dm' ? '@' : '#'}</span>
-              {ch.name}
+              <span className="opacity-60">#</span>{ch.name}
             </button>
           ))}
+          {channels.length === 0 && <p className="text-xs text-gray-500 px-2 py-1">Nenhum canal</p>}
 
-          {channels.length === 0 && (
-            <p className="text-xs text-gray-500 px-2 py-2">Nenhum canal ainda</p>
-          )}
+          {/* DMs */}
+          <div className="px-2 mb-1 mt-3">
+            <span className="text-xs text-gray-400 uppercase tracking-wider">Mensagens diretas</span>
+          </div>
+          {dms.map((dm) => (
+            <button key={dm.id} onClick={() => setChannel(dm.id)}
+              className={`w-full text-left px-3 py-1.5 rounded text-sm transition flex items-center gap-1.5 ${
+                activeChannelId === dm.id ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+              <span className="opacity-60">@</span>{dm.name.replace('dm-', '')}
+            </button>
+          ))}
+          {dms.length === 0 && <p className="text-xs text-gray-500 px-2 py-1">Nenhum DM</p>}
         </nav>
 
-        {/* Hint */}
+        {/* Hints */}
         <div className="px-3 py-2 text-xs text-gray-500 border-t border-gray-700">
-          <p><kbd className="bg-gray-700 px-1 rounded">@ai</kbd> para IA</p>
-          <p><kbd className="bg-gray-700 px-1 rounded">/run py</kbd> para código</p>
+          <p><kbd className="bg-gray-700 px-1 rounded">@ai</kbd> para IA &nbsp; <kbd className="bg-gray-700 px-1 rounded">/run py</kbd> código</p>
         </div>
 
         {/* User footer */}
@@ -87,9 +86,7 @@ export default function Sidebar({ workspaceId }: { workspaceId: string }) {
             </div>
             <span className="text-sm truncate">{username}</span>
           </div>
-          <button onClick={handleLogout} className="text-gray-400 hover:text-white text-xs">
-            Sair
-          </button>
+          <button onClick={() => { logout(); navigate('/login') }} className="text-gray-400 hover:text-white text-xs">Sair</button>
         </div>
       </aside>
 

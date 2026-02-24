@@ -15,9 +15,12 @@ router = APIRouter()
 
 class MessageCreate(BaseModel):
     channel_id: str
-    content: str
+    content: str = ""
     type: str = "text"
     parent_id: Optional[str] = None
+    file_url: Optional[str] = None
+    file_name: Optional[str] = None
+    file_type: Optional[str] = None
 
 
 class BotMessageCreate(BaseModel):
@@ -30,7 +33,7 @@ class BotMessageCreate(BaseModel):
 async def get_messages(channel_id: str, limit: int = 50, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(Message)
-        .where(Message.channel_id == channel_id)
+        .where(Message.channel_id == channel_id, Message.parent_id.is_(None))
         .order_by(Message.created_at.desc())
         .limit(limit)
     )
@@ -56,12 +59,12 @@ async def create_message(
         content = f"```{lang}\n{code}\n```\n**Output:**\n```\n{output}\n```"
         msg_type = "code"
 
-    # Handle @ai mention
     elif content.startswith("@ai"):
-        # Get last 10 messages as context
         ctx_result = await db.execute(
-            select(Message).where(Message.channel_id == data.channel_id)
-            .order_by(Message.created_at.desc()).limit(10)
+            select(Message)
+            .where(Message.channel_id == data.channel_id)
+            .order_by(Message.created_at.desc())
+            .limit(10)
         )
         history = [
             {"role": "user" if m.user_id != "ai" else "assistant", "content": m.content}
@@ -69,11 +72,9 @@ async def create_message(
         ]
         from app.bots.ai_bot import handle_ai_mention
         ai_response = await handle_ai_mention(content, history)
-
-        # Save AI response as a separate message
         ai_msg = Message(
             channel_id=data.channel_id,
-            user_id="ai",
+            user_id=None,
             content=ai_response,
             type="ai",
         )
@@ -90,16 +91,17 @@ async def create_message(
             "message_type": "ai",
             "created_at": str(ai_msg.created_at),
         })
-
         msg_type = "text"
 
-    # Save user message
     msg = Message(
         channel_id=data.channel_id,
         user_id=current_user.id,
         content=content,
         type=msg_type,
         parent_id=data.parent_id,
+        file_url=data.file_url,
+        file_name=data.file_name,
+        file_type=data.file_type,
     )
     db.add(msg)
     await db.commit()
@@ -114,6 +116,9 @@ async def create_message(
         "content": msg.content,
         "message_type": msg.type,
         "created_at": str(msg.created_at),
+        "file_url": msg.file_url,
+        "file_name": msg.file_name,
+        "file_type": msg.file_type,
     }
     await manager.broadcast(data.channel_id, payload)
     return msg
@@ -121,7 +126,7 @@ async def create_message(
 
 @router.post("/bot")
 async def bot_message(data: BotMessageCreate, db: AsyncSession = Depends(get_db)):
-    msg = Message(channel_id=data.channel_id, user_id="bot", content=data.content, type="bot")
+    msg = Message(channel_id=data.channel_id, user_id=None, content=data.content, type="bot")
     db.add(msg)
     await db.commit()
     await db.refresh(msg)

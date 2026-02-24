@@ -14,7 +14,9 @@ export default function ChatPanel({ channelId }: { channelId: string }) {
 
   useEffect(() => {
     api.get(`/api/messages/channel/${channelId}`)
-      .then((r) => setMessages(r.data.reverse()))
+      .then((r) => setMessages(
+        r.data.reverse().map((m: any) => ({ ...m, message_type: m.type }))
+      ))
       .catch(() => {})
   }, [channelId])
 
@@ -24,22 +26,17 @@ export default function ChatPanel({ channelId }: { channelId: string }) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-0.5">
         {messages.map((msg) => (
           <MessageBubble key={msg.id} message={msg} />
         ))}
-
-        {/* Typing indicator */}
         {typingUsers.length > 0 && (
           <div className="px-3 py-1 text-xs text-gray-400 italic">
             {typingUsers.join(', ')} está digitando...
           </div>
         )}
-
         <div ref={bottomRef} />
       </div>
-
       <MessageInput channelId={channelId} onSend={send} onTyping={sendTyping} />
     </div>
   )
