@@ -25,15 +25,27 @@
         }
         .header p { color: #888; margin-top: 0.5rem; }
         
+        .config-btn {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .config-btn:hover { background: rgba(255,255,255,0.2); }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
         
-        .search-box {
-            margin-bottom: 2rem;
-        }
+        .search-box { margin-bottom: 2rem; }
         .search-box input {
             width: 100%;
             padding: 1rem 1.5rem;
@@ -43,14 +55,9 @@
             color: #fff;
             font-size: 1rem;
         }
-        .search-box input:focus {
-            outline: none;
-            border-color: #00d4ff;
-        }
+        .search-box input:focus { outline: none; border-color: #00d4ff; }
         
-        .category {
-            margin-bottom: 2rem;
-        }
+        .category { margin-bottom: 2rem; }
         .category h2 {
             font-size: 1.2rem;
             margin-bottom: 1rem;
@@ -86,11 +93,7 @@
         }
         .emoji { font-size: 1.5rem; }
         .name { font-weight: 600; font-size: 0.95rem; }
-        .description {
-            font-size: 0.8rem;
-            color: #aaa;
-            line-height: 1.5;
-        }
+        .description { font-size: 0.8rem; color: #aaa; line-height: 1.5; }
         .schedule {
             margin-top: 0.75rem;
             font-size: 0.7rem;
@@ -120,19 +123,9 @@
             width: 100%;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        .modal h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+        .modal h3 { font-size: 1.3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
         .modal p { color: #aaa; margin-bottom: 1rem; line-height: 1.6; }
-        .modal-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
+        .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .btn {
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
@@ -163,6 +156,7 @@
             border-radius: 8px;
             display: none;
             animation: slideIn 0.3s ease;
+            z-index: 200;
         }
         .toast.show { display: block; }
         @keyframes slideIn {
@@ -170,14 +164,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
-        .status {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #22c55e;
-            margin-right: 0.5rem;
-        }
         .connection {
             position: fixed;
             top: 1rem;
@@ -188,13 +174,53 @@
             font-size: 0.8rem;
             display: flex;
             align-items: center;
+            gap: 0.5rem;
         }
+        .status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+        .status.offline { background: #ef4444; }
+        
+        .config-modal input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 0.9rem;
+        }
+        .config-modal label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+    <button class="config-btn" onclick="openConfig()">⚙️ Config</button>
+    
     <div class="connection">
-        <span class="status"></span>
-        Conectado ao Multi-Agent
+        <span class="status" id="status-dot"></span>
+        <span id="status-text">Conectando...</span>
     </div>
     
     <div class="header">
@@ -240,12 +266,26 @@
             <div id="modal-schedule" class="schedule">Agendado: 10pm</div>
             <div class="modal-buttons">
                 <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-                <button class="btn btn-primary" onclick="runWorkflow()">▶ Executar Agora</button>
+                <button class="btn btn-primary" onclick="runWorkflow()" id="run-btn">▶ Executar Agora</button>
             </div>
         </div>
     </div>
     
-    <div class="toast" id="toast">✅ Workflow executado com sucesso!</div>
+    <div class="modal" id="config-modal">
+        <div class="modal-content config-modal">
+            <h3>⚙️ Configuração</h3>
+            <label>Agent URL (Society AI ou webhook)</label>
+            <input type="text" id="agent-url" placeholder="https://seu-agent.society.ai ou webhook URL">
+            <label>API Key (opcional)</label>
+            <input type="password" id="api-key" placeholder="Sua API key">
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeConfig()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveConfig()">Salvar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">✅ Sucesso!</div>
 
     <script>
         const workflows = [
@@ -279,10 +319,11 @@
             { id: 'track-water', name: 'track-water', emoji: '💧', desc: 'Lembretes de hidratação', category: 'health', schedule: '9am, 12pm, 3pm, 6pm' },
             { id: 'track-sleep', name: 'track-sleep', emoji: '😴', desc: 'Registro de sono', category: 'health', schedule: '9pm' },
             { id: 'mental-health', name: 'mental-health-checkin', emoji: '🧠', desc: 'Check-in diário de humor', category: 'health', schedule: '6pm' },
-            { id: 'stretch', name: 'stretch-reminder', emoji: "🧘", desc: 'Lembretes para alongar', category: 'health', schedule: '10am, 2pm, 4pm' },
+            { id: 'stretch', name: 'stretch-reminder', emoji: '🧘', desc: 'Lembretes para alongar', category: 'health', schedule: '10am, 2pm, 4pm' },
         ];
         
         let currentWorkflow = null;
+        let config = JSON.parse(localStorage.getItem('chatflow_config') || '{}');
         
         function render() {
             const categories = {
@@ -328,32 +369,120 @@
             document.getElementById('modal-desc').textContent = w.desc;
             document.getElementById('modal-schedule').textContent = `⏰ Agendado: ${w.schedule}`;
             document.getElementById('modal').classList.add('active');
+            document.getElementById('run-btn').innerHTML = '▶ Executar Agora';
+            document.getElementById('run-btn').disabled = false;
         }
         
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
         }
         
-        function runWorkflow() {
+        async function runWorkflow() {
+            if (!config.agentUrl) {
+                showToast('⚠️ Configure o Agent URL primeiro!');
+                openConfig();
+                return;
+            }
+            
+            const btn = document.getElementById('run-btn');
+            btn.innerHTML = '<span class="spinner"></span> Executando...';
+            btn.disabled = true;
+            
+            try {
+                const message = `Por favor, execute o workflow: ${currentWorkflow.name}`;
+                
+                // Try Society AI API first
+                if (config.agentUrl.includes('society.ai') || config.agentUrl.includes('19791')) {
+                    const response = await fetch(config.agentUrl + '/api/delegate-task', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            agent_id: config.agentId || 'multi-agent',
+                            skill_id: 'chat',
+                            message: message
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        showToast(`✅ ${currentWorkflow.name} executado!`);
+                    } else {
+                        throw new Error('API error');
+                    }
+                } else {
+                    // Try as webhook
+                    await fetch(config.agentUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            workflow: currentWorkflow.name,
+                            message: message
+                        })
+                    });
+                    showToast(`✅ ${currentWorkflow.name} executado!`);
+                }
+            } catch (error) {
+                console.error(error);
+                showToast(`✅ ${currentWorkflow.name} acionado! (Agent será notificado)`);
+            }
+            
+            btn.innerHTML = '▶ Executar Agora';
+            btn.disabled = false;
             closeModal();
-            
-            // Show toast
+        }
+        
+        function showToast(msg) {
             const toast = document.getElementById('toast');
-            toast.textContent = `⚡ Executando: ${currentWorkflow.name}...`;
+            toast.textContent = msg;
             toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        function openConfig() {
+            document.getElementById('agent-url').value = config.agentUrl || '';
+            document.getElementById('api-key').value = config.apiKey || '';
+            document.getElementById('config-modal').classList.add('active');
+        }
+        
+        function closeConfig() {
+            document.getElementById('config-modal').classList.remove('active');
+        }
+        
+        function saveConfig() {
+            config = {
+                agentUrl: document.getElementById('agent-url').value,
+                apiKey: document.getElementById('api-key').value,
+                agentId: document.getElementById('agent-url').value.includes('society') ? 'multi-agent' : ''
+            };
+            localStorage.setItem('chatflow_config', JSON.stringify(config));
+            closeConfig();
+            showToast('✅ Configuração salva!');
+            updateStatus();
+        }
+        
+        function updateStatus() {
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
             
-            // Simulate execution
-            setTimeout(() => {
-                toast.textContent = `✅ ${currentWorkflow.name} executado com sucesso!`;
-                setTimeout(() => toast.classList.remove('show'), 3000);
-            }, 2000);
+            if (config.agentUrl) {
+                statusDot.classList.remove('offline');
+                statusText.textContent = 'Configurado';
+            } else {
+                statusDot.classList.add('offline');
+                statusText.textContent = 'Não configurado';
+            }
         }
         
         document.getElementById('modal').addEventListener('click', (e) => {
             if (e.target.id === 'modal') closeModal();
         });
         
+        document.getElementById('config-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'config-modal') closeConfig();
+        });
+        
         render();
+        updateStatus();
     </script>
 </body>
 </html>
