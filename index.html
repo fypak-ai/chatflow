@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Workflows | ClawFlows</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        header {
+            text-align: center;
+            padding: 4rem 0;
+            border-bottom: 1px solid #21262d;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #58a6ff, #a371f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            color: #8b949e;
+            font-size: 1.1rem;
+        }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .stat {
+            background: #161b22;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            border: 1px solid #21262d;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #58a6ff;
+        }
+        .stat-label {
+            font-size: 0.875rem;
+            color: #8b949e;
+        }
+        .section {
+            padding: 2rem 0;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        .card {
+            background: #161b22;
+            border: 1px solid #21262d;
+            border-radius: 8px;
+            padding: 1.25rem;
+            transition: all 0.2s ease;
+        }
+        .card:hover {
+            border-color: #58a6ff;
+            transform: translateY(-2px);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .emoji {
+            font-size: 1.5rem;
+        }
+        .name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+        }
+        .description {
+            font-size: 0.875rem;
+            color: #8b949e;
+            margin-bottom: 0.75rem;
+        }
+        .schedule {
+            font-size: 0.75rem;
+            color: #7ee787;
+            background: rgba(126, 231, 135, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+            margin-right: 0.25rem;
+            margin-top: 0.5rem;
+        }
+        .tag-home { background: rgba(255, 123, 114, 0.2); color: #ff7b72; }
+        .tag-productivity { background: rgba(121, 192, 255, 0.2); color: #79c0ff; }
+        .tag-health { background: rgba(158, 236, 138, 0.2); color: #9eea8a; }
+        .tag-communication { background: rgba(198, 120, 255, 0.2); color: #c678ff; }
+        .tag-finance { background: rgba(255, 207, 73, 0.2); color: #ffcf49; }
+        .tag-creative { background: rgba(255, 123, 114, 0.2); color: #ff7b72; }
+        
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid #21262d;
+            color: #8b949e;
+        }
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .social-links a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+        .social-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Multi-Agent Workflows</h1>
+            <p class="subtitle">Powerful automations for your OpenClaw assistant</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">100+</div>
+                    <div class="stat-label">Workflows</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">Open</div>
+                    <div class="stat-label">Source</div>
+                </div>
+            </div>
+        </header>
+
+        <section class="section">
+            <h2 class="section-title">🏠 Smart Home</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">🛏️</span>
+                        <span class="name">activate-sleep-mode</span>
+                    </div>
+                    <p class="description">Bedtime automation — turns off all lights, thermostats, and music, then turns on the bedroom fan.</p>
+                    <span class="schedule">On-demand</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">🌅</span>
+                        <span class="name">activate-morning-mode</span>
+                    </div>
+                    <p class="description">Bright warm lights, comfortable thermostat, energizing music to start your day.</p>
+                    <span class="schedule">9am</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">🌙</span>
+                        <span class="name">activate-night-mode</span>
+                    </div>
+                    <p class="description">Dims lights to warm red, plays sleep music for winding down.</p>
+                    <span class="schedule">8pm</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">🧘</span>
+                        <span class="name">activate-focus-mode</span>
+                    </div>
+                    <p class="description">Bright daylight lights, mutes speakers, blocks distracting sites for deep work.</p>
+                    <span class="schedule">10am</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">🚪</span>
+                        <span class="name">activate-away-mode</span>
+                    </div>
+                    <p class="description">Everything off, thermostat to eco — for when you leave the house.</p>
+                    <span class="schedule">On-demand</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">📅 Productivity</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">☀️</span>
+                        <span class="name">send-morning-briefing</span>
+                    </div>
+                    <p class="description">Weather, calendar, priorities, and urgent items — your daily command center.</p>
+                    <span class="schedule">7am</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">📅</span>
+                        <span class="name">check-calendar</span>
+                    </div>
+                    <p class="description">48-hour radar with conflict detection, travel time, and prep notes.</p>
+                    <span class="schedule">8am, 6pm</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">📝</span>
+                        <span class="name">plan-week</span>
+                    </div>
+                    <p class="description">Sunday evening weekly planning — reviews calendar, sets priorities.</p>
+                    <span class="schedule">Sunday 6pm</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">✅</span>
+                        <span class="name">triage-tasks</span>
+                    </div>
+                    <p class="description">Morning task review — what's due, overdue, and your top 3 priorities.</p>
+                    <span class="schedule">8am</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">📊</span>
+                        <span class="name">review-week</span>
+                    </div>
+                    <p class="description">Friday reflection — calendar, tasks, goals progress, what went well.</p>
+                    <span class="schedule">Friday 5pm</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">📧 Communication</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">📧</span>
+                        <span class="name">process-email</span>
+                    </div>
+                    <p class="description">Auto-unsubscribes from newsletters, archives mailing lists, summarizes what needs attention.</p>
+                    <span class="schedule">9am, 1pm, 5pm</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">🔔</span>
+                        <span class="name">check-follow-ups</span>
+                    </div>
+                    <p class="description">Finds unanswered emails, promises you made, and balls about to drop.</p>
+                    <span class="schedule">9am, 4pm</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">💬</span>
+                        <span class="name">check-messages</span>
+                    </div>
+                    <p class="description">Unified triage across Slack, Discord, Telegram, WhatsApp.</p>
+                    <span class="schedule">9am, 12pm, 3pm, 6pm</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">🐦</span>
+                        <span class="name">check-x</span>
+                    </div>
+                    <p class="description">X/Twitter — check notifications, respond to mentions, engage authentically.</p>
+                    <span class="schedule">10am, 5pm</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">💰 Finance</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">🧾</span>
+                        <span class="name">check-bills</span>
+                    </div>
+                    <p class="description">Upcoming bills, due dates, and amount spikes — nothing slips through.</p>
+                    <span class="schedule">Monday 8am</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">💳</span>
+                        <span class="name">check-subscriptions</span>
+                    </div>
+                    <p class="description">Find forgotten subscriptions, calculate monthly burn, suggest what to cancel.</p>
+                    <span class="schedule">Monday 9am</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">💰</span>
+                        <span class="name">track-budget</span>
+                    </div>
+                    <p class="description">Weekly spending check — scans receipts and bank notifications against your budget.</p>
+                    <span class="schedule">Friday 6pm</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">💪 Health & Habits</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">📊</span>
+                        <span class="name">track-habits</span>
+                    </div>
+                    <p class="description">Log daily habits and get a weekly scorecard with streaks and trends.</p>
+                    <span class="schedule">9pm</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">💧</span>
+                        <span class="name">track-water</span>
+                    </div>
+                    <p class="description">Hydration check-ins throughout the day to help you drink enough water.</p>
+                    <span class="schedule">9am, 12pm, 3pm, 6pm</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">😴</span>
+                        <span class="name">track-sleep</span>
+                    </div>
+                    <p class="description">Evening sleep logger that tracks your rest and shows weekly trends.</p>
+                    <span class="schedule">9pm</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">🧘</span>
+                        <span class="name">stretch-reminder</span>
+                    </div>
+                    <p class="description">Movement break reminders with simple stretches during work hours.</p>
+                    <span class="schedule">10am, 2pm, 4pm</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="emoji">🧠</span>
+                        <span class="name">mental-health-checkin</span>
+                    </div>
+                    <p class="description">Daily mood and energy check-in to help you notice patterns.</p>
+                    <span class="schedule">6pm</span>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>🤖 Powered by <strong>OpenClaw</strong> + <strong>ClawFlows</strong></p>
+            <div class="social-links">
+                <a href="https://github.com/nikilster/clawflows">GitHub</a>
+                <a href="https://openclaw.ai">OpenClaw</a>
+                <a href="https://societyai.com/agents/multi-agent">Society AI</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
