@@ -3,86 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Agent Workflows | ClawFlows</title>
+    <title>ChatFlow - Your AI Workflows</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0d1117;
-            color: #c9d1d9;
-            line-height: 1.6;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
         }
+        .header {
+            background: rgba(0,0,0,0.3);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header p { color: #888; margin-top: 0.5rem; }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
-        header {
-            text-align: center;
-            padding: 4rem 0;
-            border-bottom: 1px solid #21262d;
+        
+        .search-box {
+            margin-bottom: 2rem;
         }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(90deg, #58a6ff, #a371f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .search-box input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 1rem;
         }
-        .subtitle {
-            color: #8b949e;
-            font-size: 1.1rem;
+        .search-box input:focus {
+            outline: none;
+            border-color: #00d4ff;
         }
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 2rem;
+        
+        .category {
+            margin-bottom: 2rem;
         }
-        .stat {
-            background: #161b22;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            border: 1px solid #21262d;
-        }
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #58a6ff;
-        }
-        .stat-label {
-            font-size: 0.875rem;
-            color: #8b949e;
-        }
-        .section {
-            padding: 2rem 0;
-        }
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
+        .category h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
+        
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1rem;
         }
+        
         .card {
-            background: #161b22;
-            border: 1px solid #21262d;
-            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
             padding: 1.25rem;
-            transition: all 0.2s ease;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         .card:hover {
-            border-color: #58a6ff;
-            transform: translateY(-2px);
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-3px);
+            border-color: #00d4ff;
         }
         .card-header {
             display: flex;
@@ -90,298 +84,276 @@
             gap: 0.75rem;
             margin-bottom: 0.75rem;
         }
-        .emoji {
-            font-size: 1.5rem;
-        }
-        .name {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #fff;
-        }
+        .emoji { font-size: 1.5rem; }
+        .name { font-weight: 600; font-size: 0.95rem; }
         .description {
-            font-size: 0.875rem;
-            color: #8b949e;
-            margin-bottom: 0.75rem;
+            font-size: 0.8rem;
+            color: #aaa;
+            line-height: 1.5;
         }
         .schedule {
-            font-size: 0.75rem;
-            color: #7ee787;
-            background: rgba(126, 231, 135, 0.1);
+            margin-top: 0.75rem;
+            font-size: 0.7rem;
+            color: #00d4ff;
+            background: rgba(0,212,255,0.1);
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
             display: inline-block;
         }
-        .tag {
-            display: inline-block;
-            font-size: 0.75rem;
-            padding: 0.125rem 0.5rem;
-            border-radius: 12px;
-            margin-right: 0.25rem;
-            margin-top: 0.5rem;
-        }
-        .tag-home { background: rgba(255, 123, 114, 0.2); color: #ff7b72; }
-        .tag-productivity { background: rgba(121, 192, 255, 0.2); color: #79c0ff; }
-        .tag-health { background: rgba(158, 236, 138, 0.2); color: #9eea8a; }
-        .tag-communication { background: rgba(198, 120, 255, 0.2); color: #c678ff; }
-        .tag-finance { background: rgba(255, 207, 73, 0.2); color: #ffcf49; }
-        .tag-creative { background: rgba(255, 123, 114, 0.2); color: #ff7b72; }
         
-        footer {
-            text-align: center;
-            padding: 3rem 0;
-            border-top: 1px solid #21262d;
-            color: #8b949e;
-        }
-        .social-links {
-            display: flex;
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+            align-items: center;
             justify-content: center;
+            padding: 1rem;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .modal h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .modal p { color: #aaa; margin-bottom: 1rem; line-height: 1.6; }
+        .modal-buttons {
+            display: flex;
             gap: 1rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
-        .social-links a {
-            color: #58a6ff;
-            text-decoration: none;
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            flex: 1;
+            transition: all 0.2s;
         }
-        .social-links a:hover {
-            text-decoration: underline;
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            color: #fff;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.show { display: block; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            margin-right: 0.5rem;
+        }
+        .connection {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0,0,0,0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🤖 Multi-Agent Workflows</h1>
-            <p class="subtitle">Powerful automations for your OpenClaw assistant</p>
-            <div class="stats">
-                <div class="stat">
-                    <div class="stat-number">100+</div>
-                    <div class="stat-label">Workflows</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">8</div>
-                    <div class="stat-label">Categories</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">Open</div>
-                    <div class="stat-label">Source</div>
-                </div>
-            </div>
-        </header>
-
-        <section class="section">
-            <h2 class="section-title">🏠 Smart Home</h2>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">🛏️</span>
-                        <span class="name">activate-sleep-mode</span>
-                    </div>
-                    <p class="description">Bedtime automation — turns off all lights, thermostats, and music, then turns on the bedroom fan.</p>
-                    <span class="schedule">On-demand</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">🌅</span>
-                        <span class="name">activate-morning-mode</span>
-                    </div>
-                    <p class="description">Bright warm lights, comfortable thermostat, energizing music to start your day.</p>
-                    <span class="schedule">9am</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">🌙</span>
-                        <span class="name">activate-night-mode</span>
-                    </div>
-                    <p class="description">Dims lights to warm red, plays sleep music for winding down.</p>
-                    <span class="schedule">8pm</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">🧘</span>
-                        <span class="name">activate-focus-mode</span>
-                    </div>
-                    <p class="description">Bright daylight lights, mutes speakers, blocks distracting sites for deep work.</p>
-                    <span class="schedule">10am</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">🚪</span>
-                        <span class="name">activate-away-mode</span>
-                    </div>
-                    <p class="description">Everything off, thermostat to eco — for when you leave the house.</p>
-                    <span class="schedule">On-demand</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2 class="section-title">📅 Productivity</h2>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">☀️</span>
-                        <span class="name">send-morning-briefing</span>
-                    </div>
-                    <p class="description">Weather, calendar, priorities, and urgent items — your daily command center.</p>
-                    <span class="schedule">7am</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">📅</span>
-                        <span class="name">check-calendar</span>
-                    </div>
-                    <p class="description">48-hour radar with conflict detection, travel time, and prep notes.</p>
-                    <span class="schedule">8am, 6pm</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">📝</span>
-                        <span class="name">plan-week</span>
-                    </div>
-                    <p class="description">Sunday evening weekly planning — reviews calendar, sets priorities.</p>
-                    <span class="schedule">Sunday 6pm</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">✅</span>
-                        <span class="name">triage-tasks</span>
-                    </div>
-                    <p class="description">Morning task review — what's due, overdue, and your top 3 priorities.</p>
-                    <span class="schedule">8am</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">📊</span>
-                        <span class="name">review-week</span>
-                    </div>
-                    <p class="description">Friday reflection — calendar, tasks, goals progress, what went well.</p>
-                    <span class="schedule">Friday 5pm</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2 class="section-title">📧 Communication</h2>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">📧</span>
-                        <span class="name">process-email</span>
-                    </div>
-                    <p class="description">Auto-unsubscribes from newsletters, archives mailing lists, summarizes what needs attention.</p>
-                    <span class="schedule">9am, 1pm, 5pm</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">🔔</span>
-                        <span class="name">check-follow-ups</span>
-                    </div>
-                    <p class="description">Finds unanswered emails, promises you made, and balls about to drop.</p>
-                    <span class="schedule">9am, 4pm</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">💬</span>
-                        <span class="name">check-messages</span>
-                    </div>
-                    <p class="description">Unified triage across Slack, Discord, Telegram, WhatsApp.</p>
-                    <span class="schedule">9am, 12pm, 3pm, 6pm</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">🐦</span>
-                        <span class="name">check-x</span>
-                    </div>
-                    <p class="description">X/Twitter — check notifications, respond to mentions, engage authentically.</p>
-                    <span class="schedule">10am, 5pm</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2 class="section-title">💰 Finance</h2>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">🧾</span>
-                        <span class="name">check-bills</span>
-                    </div>
-                    <p class="description">Upcoming bills, due dates, and amount spikes — nothing slips through.</p>
-                    <span class="schedule">Monday 8am</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">💳</span>
-                        <span class="name">check-subscriptions</span>
-                    </div>
-                    <p class="description">Find forgotten subscriptions, calculate monthly burn, suggest what to cancel.</p>
-                    <span class="schedule">Monday 9am</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">💰</span>
-                        <span class="name">track-budget</span>
-                    </div>
-                    <p class="description">Weekly spending check — scans receipts and bank notifications against your budget.</p>
-                    <span class="schedule">Friday 6pm</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2 class="section-title">💪 Health & Habits</h2>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">📊</span>
-                        <span class="name">track-habits</span>
-                    </div>
-                    <p class="description">Log daily habits and get a weekly scorecard with streaks and trends.</p>
-                    <span class="schedule">9pm</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">💧</span>
-                        <span class="name">track-water</span>
-                    </div>
-                    <p class="description">Hydration check-ins throughout the day to help you drink enough water.</p>
-                    <span class="schedule">9am, 12pm, 3pm, 6pm</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">😴</span>
-                        <span class="name">track-sleep</span>
-                    </div>
-                    <p class="description">Evening sleep logger that tracks your rest and shows weekly trends.</p>
-                    <span class="schedule">9pm</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">🧘</span>
-                        <span class="name">stretch-reminder</span>
-                    </div>
-                    <p class="description">Movement break reminders with simple stretches during work hours.</p>
-                    <span class="schedule">10am, 2pm, 4pm</span>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="emoji">🧠</span>
-                        <span class="name">mental-health-checkin</span>
-                    </div>
-                    <p class="description">Daily mood and energy check-in to help you notice patterns.</p>
-                    <span class="schedule">6pm</span>
-                </div>
-            </div>
-        </section>
-
-        <footer>
-            <p>🤖 Powered by <strong>OpenClaw</strong> + <strong>ClawFlows</strong></p>
-            <div class="social-links">
-                <a href="https://github.com/nikilster/clawflows">GitHub</a>
-                <a href="https://openclaw.ai">OpenClaw</a>
-                <a href="https://societyai.com/agents/multi-agent">Society AI</a>
-            </div>
-        </footer>
+    <div class="connection">
+        <span class="status"></span>
+        Conectado ao Multi-Agent
     </div>
+    
+    <div class="header">
+        <h1>⚡ ChatFlow</h1>
+        <p>Automações inteligentes para o seu assistente de IA</p>
+    </div>
+    
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="search" placeholder="🔍 Buscar workflows..." onkeyup="filterWorkflows()">
+        </div>
+        
+        <div class="category">
+            <h2>🏠 Casa Inteligente</h2>
+            <div class="grid" id="home"></div>
+        </div>
+        
+        <div class="category">
+            <h2>📅 Produtividade</h2>
+            <div class="grid" id="productivity"></div>
+        </div>
+        
+        <div class="category">
+            <h2>📧 Comunicação</h2>
+            <div class="grid" id="communication"></div>
+        </div>
+        
+        <div class="category">
+            <h2>💰 Finanças</h2>
+            <div class="grid" id="finance"></div>
+        </div>
+        
+        <div class="category">
+            <h2>💪 Saúde & Hábitos</h2>
+            <div class="grid" id="health"></div>
+        </div>
+    </div>
+    
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">🛏️ Sleep Mode</h3>
+            <p id="modal-desc">Description here</p>
+            <div id="modal-schedule" class="schedule">Agendado: 10pm</div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="runWorkflow()">▶ Executar Agora</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">✅ Workflow executado com sucesso!</div>
+
+    <script>
+        const workflows = [
+            // Smart Home
+            { id: 'sleep-mode', name: 'activate-sleep-mode', emoji: '🛏️', desc: 'Desliga luzes, termostato e música para dormir', category: 'home', schedule: '10pm' },
+            { id: 'morning-mode', name: 'activate-morning-mode', emoji: '🌅', desc: 'Luzes intensas e música energizante para acordar', category: 'home', schedule: '9am' },
+            { id: 'night-mode', name: 'activate-night-mode', emoji: '🌙', desc: 'Luzes fracas e música relaxante para relaxing', category: 'home', schedule: '8pm' },
+            { id: 'focus-mode', name: 'activate-focus-mode', emoji: '🧘', desc: 'Ambiente ideal para trabalho profundo', category: 'home', schedule: '10am' },
+            { id: 'away-mode', name: 'activate-away-mode', emoji: '🚪', desc: 'Tudo desligado quando sair de casa', category: 'home', schedule: 'On-demand' },
+            
+            // Productivity
+            { id: 'morning-briefing', name: 'send-morning-briefing', emoji: '☀️', desc: 'Resumo do dia: clima, calendário, prioridades', category: 'productivity', schedule: '7am' },
+            { id: 'check-calendar', name: 'check-calendar', emoji: '📅', desc: 'Próximos 48h, conflitos e notas de preparação', category: 'productivity', schedule: '8am, 6pm' },
+            { id: 'plan-week', name: 'plan-week', emoji: '📝', desc: 'Planejamento semanal todo domingo', category: 'productivity', schedule: 'Sunday 6pm' },
+            { id: 'triage-tasks', name: 'triage-tasks', emoji: '✅', desc: 'Revisão matinal de tarefas', category: 'productivity', schedule: '8am' },
+            { id: 'review-week', name: 'review-week', emoji: '📊', desc: 'Resumo semanal de produtividade', category: 'productivity', schedule: 'Friday 5pm' },
+            
+            // Communication
+            { id: 'process-email', name: 'process-email', emoji: '📧', desc: 'Limpa inbox, desinscreve de newsletters', category: 'communication', schedule: '9am, 1pm, 5pm' },
+            { id: 'check-follow-ups', name: 'check-follow-ups', emoji: '🔔', desc: 'Emails não respondidos e follow-ups', category: 'communication', schedule: '9am, 4pm' },
+            { id: 'check-messages', name: 'check-messages', emoji: '💬', desc: 'Unifica Slack, Discord, WhatsApp, Telegram', category: 'communication', schedule: '9am, 12pm, 3pm, 6pm' },
+            { id: 'check-x', name: 'check-x', emoji: '🐦', desc: 'Verifica notifications do X/Twitter', category: 'communication', schedule: '10am, 5pm' },
+            
+            // Finance
+            { id: 'check-bills', name: 'check-bills', emoji: '🧾', desc: 'Contas a pagar e vencimentos', category: 'finance', schedule: 'Monday 8am' },
+            { id: 'check-subscriptions', name: 'check-subscriptions', emoji: '💳', desc: 'Assinaturas esquecidas', category: 'finance', schedule: 'Monday 9am' },
+            { id: 'track-budget', name: 'track-budget', emoji: '💰', desc: 'Controle semanal de gastos', category: 'finance', schedule: 'Friday 6pm' },
+            
+            // Health
+            { id: 'track-habits', name: 'track-habits', emoji: '📊', desc: 'Rastreia hábitos diários com weekly scorecard', category: 'health', schedule: '9pm' },
+            { id: 'track-water', name: 'track-water', emoji: '💧', desc: 'Lembretes de hidratação', category: 'health', schedule: '9am, 12pm, 3pm, 6pm' },
+            { id: 'track-sleep', name: 'track-sleep', emoji: '😴', desc: 'Registro de sono', category: 'health', schedule: '9pm' },
+            { id: 'mental-health', name: 'mental-health-checkin', emoji: '🧠', desc: 'Check-in diário de humor', category: 'health', schedule: '6pm' },
+            { id: 'stretch', name: 'stretch-reminder', emoji: "🧘", desc: 'Lembretes para alongar', category: 'health', schedule: '10am, 2pm, 4pm' },
+        ];
+        
+        let currentWorkflow = null;
+        
+        function render() {
+            const categories = {
+                home: document.getElementById('home'),
+                productivity: document.getElementById('productivity'),
+                communication: document.getElementById('communication'),
+                finance: document.getElementById('finance'),
+                health: document.getElementById('health')
+            };
+            
+            Object.values(categories).forEach(el => el.innerHTML = '');
+            
+            workflows.forEach(w => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.setAttribute('data-name', w.name.toLowerCase());
+                card.onclick = () => openModal(w);
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="emoji">${w.emoji}</span>
+                        <span class="name">${w.name}</span>
+                    </div>
+                    <p class="description">${w.desc}</p>
+                    <span class="schedule">⏰ ${w.schedule}</span>
+                `;
+                if (categories[w.category]) {
+                    categories[w.category].appendChild(card);
+                }
+            });
+        }
+        
+        function filterWorkflows() {
+            const search = document.getElementById('search').value.toLowerCase();
+            document.querySelectorAll('.card').forEach(card => {
+                const name = card.getAttribute('data-name');
+                card.style.display = name.includes(search) ? '' : 'none';
+            });
+        }
+        
+        function openModal(w) {
+            currentWorkflow = w;
+            document.getElementById('modal-title').innerHTML = `${w.emoji} ${w.name}`;
+            document.getElementById('modal-desc').textContent = w.desc;
+            document.getElementById('modal-schedule').textContent = `⏰ Agendado: ${w.schedule}`;
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        function runWorkflow() {
+            closeModal();
+            
+            // Show toast
+            const toast = document.getElementById('toast');
+            toast.textContent = `⚡ Executando: ${currentWorkflow.name}...`;
+            toast.classList.add('show');
+            
+            // Simulate execution
+            setTimeout(() => {
+                toast.textContent = `✅ ${currentWorkflow.name} executado com sucesso!`;
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }, 2000);
+        }
+        
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') closeModal();
+        });
+        
+        render();
+    </script>
 </body>
 </html>
