@@ -323,7 +323,7 @@
         ];
         
         let currentWorkflow = null;
-        let config = JSON.parse(localStorage.getItem('chatflow_config') || '{}');
+        let config = JSON.parse(localStorage.getItem('chatflow_config') || '{"agentUrl":"https://societyai.com/agents/multi-agent","agentId":"multi-agent"}');
         
         function render() {
             const categories = {
