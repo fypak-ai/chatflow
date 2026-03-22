@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔍 Serper - Pesquisa Google</title>
+    <title>🔍 Serper - Pesquisa em Português</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -27,9 +27,10 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
         
         .search-box { margin-bottom: 1rem; }
-        .search-box form { display: flex; gap: 0.5rem; }
+        .search-box form { display: flex; gap: 0.5rem; flex-wrap: wrap; }
         .search-box input {
             flex: 1;
+            min-width: 200px;
             padding: 1rem;
             border-radius: 50px;
             border: 2px solid #333;
@@ -45,6 +46,23 @@
             background: linear-gradient(90deg, #00d4ff, #a855f7);
             color: #fff;
             font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .lang-select {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .lang-select label { color: #94a3b8; font-size: 0.9rem; }
+        .lang-select select {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid #334155;
             cursor: pointer;
         }
         
@@ -64,7 +82,6 @@
         .error { background: #7f1d1d; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; color: #fca5a5; }
         .loading { text-align: center; padding: 2rem; color: #64748b; }
         
-        /* RESULT STYLES */
         .result {
             background: #1e293b;
             border-radius: 12px;
@@ -75,9 +92,8 @@
         .result a { color: #38bdf8; text-decoration: none; font-weight: 600; font-size: 1.1rem; }
         .result a:hover { text-decoration: underline; }
         .result .url { color: #22c55e; font-size: 0.85rem; margin: 0.5rem 0; }
-        .result .snippet { color: #94a3b8; line-height: 1.6; }
+        .result .snippet { color: #cbd5e1; line-height: 1.6; }
         
-        /* KNOWLEDGE PANEL */
         .knowledge-panel {
             background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
             border-radius: 16px;
@@ -93,12 +109,10 @@
         .kg-attr-label { color: #64748b; font-size: 0.75rem; }
         .kg-attr-value { color: #fff; font-size: 0.9rem; margin-top: 0.25rem; }
         
-        /* IMAGES */
         .images-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; }
         .image-card { background: #1e293b; border-radius: 8px; overflow: hidden; cursor: pointer; }
         .image-card img { width: 100%; height: 140px; object-fit: cover; }
         
-        /* VIDEOS */
         .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
         .video-card { background: #1e293b; border-radius: 12px; overflow: hidden; }
         .video-card img { width: 100%; height: 150px; object-fit: cover; }
@@ -106,43 +120,29 @@
         .video-card .title { color: #fff; font-size: 0.9rem; }
         .video-card .channel { color: #64748b; font-size: 0.8rem; margin-top: 0.25rem; }
         
-        /* SHOPPING */
         .shopping-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
         .shopping-card { background: #1e293b; border-radius: 12px; padding: 1rem; }
         .shopping-card img { width: 100%; height: 120px; object-fit: contain; background: #fff; border-radius: 8px; }
         .shopping-card .title { color: #cbd5e1; font-size: 0.85rem; margin: 0.75rem 0 0.5rem; }
         .shopping-card .price { color: #22c55e; font-weight: bold; font-size: 1.1rem; }
         
-        /* PAA */
         .paa-item { background: #1e293b; border-radius: 8px; margin-bottom: 0.75rem; overflow: hidden; }
         .paa-question { padding: 1rem; cursor: pointer; color: #38bdf8; font-weight: 600; }
         .paa-answer { padding: 0 1rem 1rem; color: #94a3b8; font-size: 0.9rem; display: none; }
         .paa-item.open .paa-answer { display: block; }
         
-        /* RELATED */
         .related { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
         .related-search { background: #1e293b; padding: 0.5rem 1rem; border-radius: 20px; color: #94a3b8; font-size: 0.85rem; cursor: pointer; }
         .related-search:hover { background: #334155; color: #fff; }
         
-        /* SUGGESTIONS */
-        .suggestion-item { padding: 1rem; border-bottom: 1px solid #334155; cursor: pointer; color: #cbd5e1; }
-        .suggestion-item:hover { background: #0f172a; }
-        
-        /* PLACE (MAPS) */
         .place-card { background: #1e293b; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
         .place-card h3 { color: #fff; margin-bottom: 0.5rem; }
         .place-card .address { color: #64748b; font-size: 0.9rem; }
         
-        /*Scholarly*/
         .scholar-result { background: #1e293b; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
         .scholar-result .authors { color: #a855f7; font-size: 0.85rem; }
         .scholar-result .venue { color: #64748b; font-size: 0.85rem; }
         
-        /*Images*/
-        .image-result { background: #1e293b; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
-        .image-result img { width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; }
-        
-        /*Footer*/
         .footer { text-align: center; padding: 2rem; color: #64748b; font-size: 0.85rem; }
     </style>
 </head>
@@ -154,9 +154,22 @@
     <div class="container">
         <div class="search-box">
             <form id="search-form">
-                <input type="text" id="query" placeholder="Pesquise no Google...">
+                <input type="text" id="query" placeholder="Pesquise...">
                 <button type="submit">Buscar</button>
             </form>
+        </div>
+        
+        <div class="lang-select">
+            <label>🌐 Idioma:</label>
+            <select id="language">
+                <option value="pt-br,pt">Português (Brasil)</option>
+                <option value="pt-pt,pt">Português (Portugal)</option>
+                <option value="en-us,en">English (US)</option>
+                <option value="es-es,es">Español</option>
+                <option value="">Todos os idiomas</option>
+            </select>
+            <label>📝 Traduzir resultados:</label>
+            <input type="checkbox" id="translate" checked>
         </div>
         
         <div class="tabs">
@@ -166,9 +179,6 @@
             <div class="tab" data-type="videos" onclick="setTab('videos')">🎬 Vídeos</div>
             <div class="tab" data-type="shopping" onclick="setTab('shopping')">🛒 Shopping</div>
             <div class="tab" data-type="places" onclick="setTab('places')">📍 Locais</div>
-            <div class="tab" data-type="scholar" onclick="setTab('scholar')">📚 Acadêmico</div>
-            <div class="tab" data-type="image" onclick="setTab('image')">🔍 Imagem</div>
-            <div class="tab" data-type="suggestions" onclick="setTab('suggestions')">💡 Sugestões</div>
         </div>
         
         <div id="error"></div>
@@ -180,6 +190,34 @@
     <script>
         const API_KEY = 'c16e7b0634206ae7f8faf87fa57feb554395bad8';
         let currentType = 'search';
+        
+        // Simple translation dictionary
+        const translations = {
+            'People also ask': 'As pessoas também perguntam',
+            'Related searches': 'Buscas relacionadas',
+            'Description': 'Descrição',
+            'Founded': 'Fundado',
+            'Headquarters': 'Sede',
+            'CEO': 'CEO',
+            'Revenue': 'Receita',
+            'Employees': 'Funcionários',
+            'Website': 'Website',
+            'Industry': 'Indústria',
+            'Founder': 'Fundador',
+            'Products': 'Produtos',
+            'Services': 'Serviços'
+        };
+        
+        function translateText(text) {
+            if (!document.getElementById('translate').checked) return text;
+            if (!text) return text;
+            
+            let result = text;
+            for (const [eng, pt] of Object.entries(translations)) {
+                result = result.replace(new RegExp(eng, 'gi'), pt);
+            }
+            return result;
+        }
         
         document.getElementById('search-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -193,10 +231,14 @@
             error.innerHTML = '';
             
             try {
+                const language = document.getElementById('language').value.split(',')[0];
+                const body = { q: query, num: 20 };
+                if (language) body.hl = language;
+                
                 const response = await fetch('https://google.serper.dev/' + getEndpoint(currentType), {
                     method: 'POST',
                     headers: { 'X-API-KEY': API_KEY, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ q: query, num: 20 })
+                    body: JSON.stringify(body)
                 });
                 
                 if (!response.ok) throw new Error('Erro ' + response.status);
@@ -216,10 +258,7 @@
                 'news': 'news',
                 'videos': 'videos',
                 'shopping': 'shopping',
-                'places': 'places',
-                'scholar': 'scholar',
-                'image': 'image',
-                'suggestions': 'suggestions'
+                'places': 'places'
             };
             return endpoints[type] || 'search';
         }
@@ -234,9 +273,6 @@
                 case 'videos': renderVideos(data, results); break;
                 case 'shopping': renderShopping(data, results); break;
                 case 'places': renderPlaces(data, results); break;
-                case 'scholar': renderScholar(data, results); break;
-                case 'image': renderImageSearch(data, results); break;
-                case 'suggestions': renderSuggestions(data, results); break;
                 default: results.innerHTML = '<div class="loading">Nenhum resultado</div>';
             }
         }
@@ -248,13 +284,13 @@
             if (data.knowledgeGraph) {
                 const kg = data.knowledgeGraph;
                 html += '<div class="knowledge-panel">';
-                if (kg.title) html += '<h2>' + kg.title + '</h2>';
-                if (kg.subTitle) html += '<div class="subtitle">' + kg.subTitle + '</div>';
-                if (kg.description) html += '<div class="desc">' + kg.description + '</div>';
+                if (kg.title) html += '<h2>' + translateText(kg.title) + '</h2>';
+                if (kg.subTitle) html += '<div class="subtitle">' + translateText(kg.subTitle) + '</div>';
+                if (kg.description) html += '<div class="desc">' + translateText(kg.description) + '</div>';
                 if (kg.attributes) {
                     html += '<div class="kg-attrs">';
                     for (const [k, v] of Object.entries(kg.attributes)) {
-                        html += '<div class="kg-attr"><div class="kg-attr-label">' + k + '</div><div class="kg-attr-value">' + v + '</div></div>';
+                        html += '<div class="kg-attr"><div class="kg-attr-label">' + translateText(k) + '</div><div class="kg-attr-value">' + v + '</div></div>';
                     }
                     html += '</div>';
                 }
@@ -265,8 +301,8 @@
             if (data.peopleAlsoAsk) {
                 data.peopleAlsoAsk.forEach(item => {
                     html += '<div class="paa-item" onclick="this.classList.toggle(\'open\')">';
-                    html += '<div class="paa-question">' + item.question + '</div>';
-                    html += '<div class="paa-answer">' + item.answer + '</div>';
+                    html += '<div class="paa-question">' + translateText(item.question) + '</div>';
+                    html += '<div class="paa-answer">' + translateText(item.answer) + '</div>';
                     html += '</div>';
                 });
             }
@@ -275,9 +311,9 @@
             if (data.organic) {
                 data.organic.forEach(item => {
                     html += '<div class="result">';
-                    html += '<a href="' + item.link + '" target="_blank">' + item.title + '</a>';
+                    html += '<a href="' + item.link + '" target="_blank">' + translateText(item.title) + '</a>';
                     html += '<div class="url">' + item.link + '</div>';
-                    html += '<div class="snippet">' + (item.snippet || '') + '</div>';
+                    html += '<div class="snippet">' + translateText(item.snippet || '') + '</div>';
                     html += '</div>';
                 });
             }
@@ -315,8 +351,8 @@
             videos.forEach(vid => {
                 html += '<div class="video-card" onclick="window.open(\'' + vid.link + '\', \'_blank\')">';
                 html += '<img src="' + (vid.thumbnail || '') + '" alt="Video">';
-                html += '<div class="info"><div class="title">' + vid.title + '</div>';
-                html += '<div class="channel">' + (vid.channel || '') + '</div></div></div>';
+                html += '<div class="info"><div class="title">' + translateText(vid.title) + '</div>';
+                html += '<div class="channel">' + translateText(vid.channel || '') + '</div></div></div>';
             });
             html += '</div>';
             container.innerHTML = html;
@@ -329,9 +365,9 @@
             let html = '';
             news.forEach(item => {
                 html += '<div class="result">';
-                html += '<div style="color:#a855f7;font-size:0.8rem;margin-bottom:0.25rem">' + item.source + '</div>';
-                html += '<a href="' + item.link + '" target="_blank">' + item.title + '</a>';
-                html += '<div class="snippet">' + (item.snippet || '') + '</div></div>';
+                html += '<div style="color:#a855f7;font-size:0.8rem;margin-bottom:0.25rem">' + translateText(item.source) + '</div>';
+                html += '<a href="' + item.link + '" target="_blank">' + translateText(item.title) + '</a>';
+                html += '<div class="snippet">' + translateText(item.snippet || '') + '</div></div>';
             });
             container.innerHTML = html;
         }
@@ -344,8 +380,8 @@
             shopping.forEach(item => {
                 html += '<div class="shopping-card">';
                 html += '<img src="' + (item.thumbnail || '') + '" alt="' + item.title + '">';
-                html += '<div class="title">' + item.title + '</div>';
-                html += '<div class="price">' + (item.price || '') + '</div>';
+                html += '<div class="title">' + translateText(item.title) + '</div>';
+                html += '<div class="price">' + translateText(item.price || '') + '</div>';
                 html += '</div>';
             });
             html += '</div>';
@@ -359,51 +395,10 @@
             let html = '';
             places.forEach(place => {
                 html += '<div class="place-card">';
-                html += '<h3>' + place.title + '</h3>';
-                html += '<div class="address">' + (place.address || '') + '</div>';
+                html += '<h3>' + translateText(place.title) + '</h3>';
+                html += '<div class="address">' + translateText(place.address || '') + '</div>';
                 html += '</div>';
             });
-            container.innerHTML = html;
-        }
-        
-        function renderScholar(data, container) {
-            const results = data.organic || [];
-            if (!results.length) { container.innerHTML = '<div class="loading">Nenhum resultado acadêmico</div>'; return; }
-            
-            let html = '';
-            results.forEach(item => {
-                html += '<div class="scholar-result">';
-                html += '<a href="' + item.link + '" target="_blank">' + item.title + '</a>';
-                html += '<div class="authors">' + (item.authors || '') + '</div>';
-                html += '<div class="venue">' + (item.venue || '') + '</div>';
-                html += '<div class="snippet">' + (item.snippet || '') + '</div></div>';
-            });
-            container.innerHTML = html;
-        }
-        
-        function renderImageSearch(data, container) {
-            const results = data.imageResults || data.images || [];
-            if (!results.length) { container.innerHTML = '<div class="loading">Nenhuma imagem</div>'; return; }
-            
-            let html = '';
-            results.forEach(item => {
-                html += '<div class="image-result">';
-                html += '<img src="' + (item.imageUrl || item.link || '') + '" alt="Image">';
-                html += '<div class="url">' + (item.source || '') + '</div>';
-                html += '</div>';
-            });
-            container.innerHTML = html;
-        }
-        
-        function renderSuggestions(data, container) {
-            const suggestions = data.autocomplete || [];
-            if (!suggestions.length) { container.innerHTML = '<div class="loading">Nenhuma sugestão</div>'; return; }
-            
-            let html = '<div style="background:#1e293b;border-radius:8px;overflow:hidden">';
-            suggestions.forEach(item => {
-                html += '<div class="suggestion-item" onclick="document.getElementById(\'query\').value=\'' + item.text + '\';document.getElementById(\'search-form\').submit()">' + item.text + '</div>';
-            });
-            html += '</div>';
             container.innerHTML = html;
         }
         
