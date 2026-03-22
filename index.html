@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔍 Serper Search</title>
+    <title>🔍 Serper Search - All Modes</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -29,10 +29,11 @@
             margin: 0 auto;
             padding: 2rem;
         }
-        .search-box { margin-bottom: 2rem; }
-        .search-box form { display: flex; gap: 0.5rem; }
+        .search-box { margin-bottom: 1.5rem; }
+        .search-box form { display: flex; gap: 0.5rem; flex-wrap: wrap; }
         .search-box input {
             flex: 1;
+            min-width: 200px;
             padding: 1rem 1.5rem;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
@@ -53,12 +54,13 @@
         
         .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
         .tab {
-            padding: 0.75rem 1.5rem;
+            padding: 0.6rem 1rem;
             border-radius: 8px;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             color: #aaa;
             cursor: pointer;
+            font-size: 0.85rem;
         }
         .tab.active {
             background: linear-gradient(90deg, rgba(0,212,255,0.2), rgba(124,58,237,0.2));
@@ -79,127 +81,115 @@
         .result .url { color: #4ade80; font-size: 0.85rem; margin: 0.5rem 0; }
         .result .snippet { color: #aaa; line-height: 1.6; font-size: 0.9rem; }
         
-        /* VIDEOS - Link-based for reliability */
+        /* KNOWLEDGE GRAPH */
+        .knowledge-panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .knowledge-panel h3 { color: #00d4ff; margin-bottom: 1rem; }
+        .knowledge-panel .description { color: #aaa; margin-bottom: 1rem; }
+        .knowledge-panel .attributes { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
+        .knowledge-panel .attr { background: rgba(255,255,255,0.05); padding: 0.5rem; border-radius: 6px; }
+        .knowledge-panel .attr-label { color: #666; font-size: 0.75rem; }
+        .knowledge-panel .attr-value { color: #fff; font-size: 0.85rem; }
+        
+        /* AUTOCOMPLETE */
+        .autocomplete-list {
+            background: rgba(0,0,0,0.8);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        .autocomplete-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .autocomplete-item:hover { background: rgba(0,212,255,0.2); }
+        
+        /* IMAGES */
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.75rem;
+        }
+        .image-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .image-card img { width: 100%; height: 150px; object-fit: cover; }
+        
+        /* VIDEOS */
         .videos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1rem;
         }
         .video-card {
             background: rgba(255,255,255,0.05);
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
         }
-        .video-card .thumb-wrapper {
-            position: relative;
-            width: 100%;
-            height: 170px;
-            background: #222;
-        }
-        .video-card img {
-            width: 100%;
-            height: 170px;
-            object-fit: cover;
-        }
-        .video-card .duration {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            background: rgba(0,0,0,0.85);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .video-card .play-btn {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #7c3aed;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
+        .video-card img { width: 100%; height: 160px; object-fit: cover; }
         .video-card .info { padding: 0.75rem; }
-        .video-card .title {
-            font-size: 0.9rem;
-            color: #fff;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.4;
-        }
-        .video-card .channel {
-            font-size: 0.75rem;
-            color: #666;
-            margin-top: 0.5rem;
-        }
+        .video-card .title { font-size: 0.85rem; color: #fff; }
+        .video-card .channel { font-size: 0.75rem; color: #666; margin-top: 0.25rem; }
         
-        /* IMAGES */
-        .images-grid {
+        /* SHOPPING */
+        .shopping-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 1rem;
         }
-        .image-card {
+        .shopping-card {
             background: rgba(255,255,255,0.05);
             border-radius: 12px;
-            overflow: hidden;
-            cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.1);
+            padding: 1rem;
         }
-        .image-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-        .image-card .info { padding: 0.5rem; }
-        .image-card .title {
-            font-size: 0.75rem;
-            color: #ccc;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .shopping-card img { width: 100%; height: 150px; object-fit: contain; background: #fff; border-radius: 8px; }
+        .shopping-card .title { font-size: 0.9rem; color: #fff; margin: 0.75rem 0 0.5rem; }
+        .shopping-card .price { color: #4ade80; font-size: 1.1rem; font-weight: bold; }
+        .shopping-card .source { color: #666; font-size: 0.75rem; }
         
-        /* LIGHTBOX */
-        .lightbox {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
+        /* PEOPLE ALSO ASK */
+        .people-also-ask {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 1rem;
         }
-        .lightbox.active { display: flex; }
-        .lightbox img {
-            max-width: 90%;
-            max-height: 90vh;
-            border-radius: 8px;
-        }
-        .lightbox .close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: #fff;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 1.5rem;
+        .paa-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
             cursor: pointer;
         }
+        .paa-item:hover { background: rgba(255,255,255,0.05); }
+        .paa-question { color: #00d4ff; font-weight: 600; font-size: 0.95rem; }
+        .paa-answer { color: #aaa; font-size: 0.85rem; margin-top: 0.5rem; display: none; }
+        .paa-item.open .paa-answer { display: block; }
         
+        /* RELATED SEARCHES */
+        .related-searches {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .related-search {
+            background: rgba(255,255,255,0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #aaa;
+            cursor: pointer;
+        }
+        .related-search:hover { background: rgba(0,212,255,0.2); color: #fff; }
+        
+        /* SPINNER */
         .spinner {
             display: inline-block;
             width: 20px;
@@ -208,6 +198,7 @@
             border-top-color: #00d4ff;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
+            vertical-align: middle;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         
@@ -217,15 +208,6 @@
             color: #ef4444;
             padding: 1rem;
             border-radius: 8px;
-        }
-        
-        .stats {
-            background: rgba(255,255,255,0.05);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-size: 0.85rem;
-            color: #888;
         }
         
         .footer {
@@ -244,26 +226,23 @@
     <div class="container">
         <div class="search-box">
             <form id="search-form">
-                <input type="text" id="query" placeholder="O que você quer pesquisar?">
-                <button type="submit">🔍 Pesquisar</button>
+                <input type="text" id="query" placeholder="Pesquise no Google...">
+                <button type="submit">🔍</button>
             </form>
         </div>
         
         <div class="tabs">
-            <div class="tab active" onclick="setTab('web')">🌐 Web</div>
-            <div class="tab" onclick="setTab('images')">🖼️ Imagens</div>
-            <div class="tab" onclick="setTab('news')">📰 Notícias</div>
-            <div class="tab" onclick="setTab('videos')">🎬 Vídeos</div>
+            <div class="tab active" data-type="search" onclick="setTab('search')">🌐 Web</div>
+            <div class="tab" data-type="images" onclick="setTab('images')">🖼️ Imagens</div>
+            <div class="tab" data-type="news" onclick="setTab('news')">📰 Notícias</div>
+            <div class="tab" data-type="videos" onclick="setTab('videos')">🎬 Vídeos</div>
+            <div class="tab" data-type="shopping" onclick="setTab('shopping')">🛒 Shopping</div>
+            <div class="tab" data-type="autocomplete" onclick="setTab('autocomplete')">💡 Sugestões</div>
+            <div class="tab" data-type="maps" onclick="setTab('maps')">🗺️ Maps</div>
         </div>
         
-        <div id="stats" class="stats" style="display:none"></div>
         <div id="error" class="error" style="display:none"></div>
         <div id="results" class="results"></div>
-    </div>
-    
-    <div class="lightbox" id="lightbox" onclick="this.classList.remove('active')">
-        <button class="close" onclick="event.stopPropagation(); document.getElementById('lightbox').classList.remove('active')">✕</button>
-        <img id="lightbox-img" src="" alt="Image">
     </div>
     
     <div class="footer">
@@ -272,8 +251,7 @@
 
     <script>
         const API_KEY = 'c16e7b0634206ae7f8faf87fa57feb554395bad8';
-        let currentType = 'web';
-        let currentImages = [];
+        let currentType = 'search';
         
         document.getElementById('search-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -284,10 +262,14 @@
             
             btn.innerHTML = '<span class="spinner"></span>';
             error.style.display = 'none';
-            results.innerHTML = '';
+            results.innerHTML = '<p style="color:#888;text-align:center;padding:2rem;">Carregando...</p>';
             
             try {
-                const response = await fetch('https://google.serper.dev/' + currentType, {
+                let endpoint = currentType;
+                if (endpoint === 'search') endpoint = 'search';
+                if (endpoint === 'maps') endpoint = 'maps';
+                
+                const response = await fetch('https://google.serper.dev/' + endpoint, {
                     method: 'POST',
                     headers: {
                         'X-API-KEY': API_KEY,
@@ -300,47 +282,89 @@
                 
                 const data = await response.json();
                 
-                if (currentType === 'web') renderWebResults(data);
+                if (currentType === 'search') renderSearchResults(data);
                 else if (currentType === 'images') renderImageResults(data);
                 else if (currentType === 'news') renderNewsResults(data);
                 else if (currentType === 'videos') renderVideoResults(data);
+                else if (currentType === 'shopping') renderShoppingResults(data);
+                else if (currentType === 'autocomplete') renderAutocompleteResults(data);
+                else if (currentType === 'maps') renderMapsResults(data);
                 
             } catch (err) {
                 error.textContent = err.message;
                 error.style.display = 'block';
             }
             
-            btn.innerHTML = '🔍 Pesquisar';
+            btn.innerHTML = '🔍';
         });
         
-        function renderWebResults(data) {
+        function renderSearchResults(data) {
             const results = document.getElementById('results');
-            if (!data.organic) {
-                results.innerHTML = '<p style="color:#888">Nenhum resultado</p>';
-                return;
+            let html = '';
+            
+            // Knowledge Graph
+            if (data.knowledgeGraph) {
+                const kg = data.knowledgeGraph;
+                html += '<div class="knowledge-panel">';
+                if (kg.title) html += '<h3>' + kg.title + '</h3>';
+                if (kg.description) html += '<p class="description">' + kg.description + '</p>';
+                if (kg.attributes) {
+                    html += '<div class="attributes">';
+                    for (const [key, value] of Object.entries(kg.attributes)) {
+                        html += '<div class="attr"><div class="attr-label">' + key + '</div><div class="attr-value">' + value + '</div></div>';
+                    }
+                    html += '</div>';
+                }
+                html += '</div>';
             }
-            results.innerHTML = data.organic.map(item => `
-                <div class="result">
-                    <a href="${item.link}" target="_blank">${item.title}</a>
-                    <div class="url">${item.link}</div>
-                    <div class="snippet">${item.snippet || ''}</div>
-                </div>
-            `).join('');
+            
+            // People Also Ask
+            if (data.peopleAlsoAsk && data.peopleAlsoAsk.length > 0) {
+                html += '<div class="people-also-ask">';
+                data.peopleAlsoAsk.forEach(item => {
+                    html += '<div class="paa-item" onclick="this.classList.toggle(\'open\')">';
+                    html += '<div class="paa-question">' + item.question + '</div>';
+                    html += '<div class="paa-answer">' + item.answer + '</div>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            
+            // Organic Results
+            if (data.organic) {
+                data.organic.forEach(item => {
+                    html += '<div class="result">';
+                    html += '<a href="' + item.link + '" target="_blank">' + item.title + '</a>';
+                    html += '<div class="url">' + item.link + '</div>';
+                    html += '<div class="snippet">' + (item.snippet || '') + '</div>';
+                    html += '</div>';
+                });
+            }
+            
+            // Related Searches
+            if (data.relatedSearches) {
+                html += '<div class="related-searches">';
+                data.relatedSearches.forEach(item => {
+                    html += '<div class="related-search" onclick="document.getElementById(\'query\').value=\'' + item.query + '\';document.getElementById(\'search-form\').submit()">' + item.query + '</div>';
+                });
+                html += '</div>';
+            }
+            
+            results.innerHTML = html || '<p style="color:#888">Nenhum resultado</p>';
         }
         
         function renderImageResults(data) {
             const results = document.getElementById('results');
-            currentImages = data.images || [];
+            const images = data.images || [];
             
-            if (currentImages.length === 0) {
+            if (images.length === 0) {
                 results.innerHTML = '<p style="color:#888">Nenhuma imagem</p>';
                 return;
             }
             
-            results.innerHTML = '<div class="images-grid">' + currentImages.map((item, i) => `
-                <div class="image-card" onclick="showImage(${i})">
-                    <img src="${item.imageUrl}" alt="Image" onerror="this.src='https://via.placeholder.com/200x180?text=Error'">
-                    <div class="info"><div class="title">${item.title || ''}</div></div>
+            results.innerHTML = '<div class="images-grid">' + images.map(item => `
+                <div class="image-card" onclick="window.open('${item.imageUrl}', '_blank')">
+                    <img src="${item.imageUrl}" alt="Image" onerror="this.style.display='none'">
                 </div>
             `).join('') + '</div>';
         }
@@ -355,12 +379,8 @@
             }
             
             results.innerHTML = '<div class="videos-grid">' + videos.map(item => `
-                <div class="video-card">
-                    <div class="thumb-wrapper">
-                        <img src="${item.thumbnail || 'https://via.placeholder.com/300x170?text=Video'}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/300x170?text=Video'">
-                        ${item.duration ? '<div class="duration">' + item.duration + '</div>' : ''}
-                        <a href="${item.link}" target="_blank" class="play-btn">▶</a>
-                    </div>
+                <div class="video-card" onclick="window.open('${item.link}', '_blank')">
+                    <img src="${item.thumbnail}" alt="Video" onerror="this.src='https://via.placeholder.com/280x160?text=Video'">
                     <div class="info">
                         <div class="title">${item.title || ''}</div>
                         <div class="channel">${item.channel || ''}</div>
@@ -387,18 +407,65 @@
             `).join('');
         }
         
-        function showImage(index) {
-            if (!currentImages[index]) return;
-            document.getElementById('lightbox-img').src = currentImages[index].imageUrl;
-            document.getElementById('lightbox').classList.add('active');
+        function renderShoppingResults(data) {
+            const results = document.getElementById('results');
+            const shopping = data.shopping || [];
+            
+            if (shopping.length === 0) {
+                results.innerHTML = '<p style="color:#888">Nenhum resultado de shopping</p>';
+                return;
+            }
+            
+            results.innerHTML = '<div class="shopping-grid">' + shopping.map(item => `
+                <div class="shopping-card">
+                    <img src="${item.thumbnail}" alt="${item.title}" onerror="this.style.display='none'">
+                    <div class="title">${item.title || ''}</div>
+                    <div class="price">${item.price || ''}</div>
+                    <div class="source">${item.source || ''}</div>
+                </div>
+            `).join('') + '</div>';
+        }
+        
+        function renderAutocompleteResults(data) {
+            const results = document.getElementById('results');
+            const suggestions = data.autocomplete || [];
+            
+            if (suggestions.length === 0) {
+                results.innerHTML = '<p style="color:#888">Nenhuma sugestão</p>';
+                return;
+            }
+            
+            results.innerHTML = '<div class="autocomplete-list">' + suggestions.map((item, i) => `
+                <div class="autocomplete-item" onclick="document.getElementById('query').value='${item.text}';document.getElementById('search-form').submit()">
+                    ${item.text}
+                </div>
+            `).join('') + '</div>';
+        }
+        
+        function renderMapsResults(data) {
+            const results = document.getElementById('results');
+            const places = data.places || [];
+            
+            if (places.length === 0) {
+                results.innerHTML = '<p style="color:#888">Nenhum resultado de mapa</p>';
+                return;
+            }
+            
+            results.innerHTML = places.map(item => `
+                <div class="result">
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address || item.title)}" target="_blank">${item.title}</a>
+                    <div class="url">${item.address || ''}</div>
+                    <div class="snippet">${item.phone || ''} ${item.website || ''}</div>
+                </div>
+            `).join('');
         }
         
         function setTab(type) {
             currentType = type;
-            document.querySelectorAll('.tab').forEach((tab, i) => {
-                const types = ['web', 'images', 'news', 'videos'];
-                tab.classList.toggle('active', types[i] === type);
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.type === type);
             });
+            document.getElementById('results').innerHTML = '';
         }
     </script>
 </body>
