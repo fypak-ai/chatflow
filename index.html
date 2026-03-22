@@ -78,97 +78,108 @@
             border-radius: 12px;
             padding: 1.25rem;
             margin-bottom: 1rem;
-            transition: all 0.2s;
-        }
-        .result:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(0,212,255,0.3);
         }
         .result a { color: #00d4ff; text-decoration: none; font-size: 1.1rem; font-weight: 600; }
-        .result a:hover { text-decoration: underline; }
         .result .url { color: #4ade80; font-size: 0.85rem; margin: 0.5rem 0; }
         .result .snippet { color: #aaa; line-height: 1.6; font-size: 0.9rem; }
         
         /* IMAGES GRID */
         .images-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 1rem;
         }
         .image-card {
             background: rgba(255,255,255,0.05);
             border-radius: 12px;
             overflow: hidden;
-            transition: all 0.3s ease;
             cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         .image-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 30px rgba(0,212,255,0.2);
+            transform: translateY(-5px);
+            border-color: #00d4ff;
+        }
+        .image-card .img-wrapper {
+            width: 100%;
+            height: 180px;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .image-card img {
             width: 100%;
-            height: 200px;
+            height: 180px;
             object-fit: cover;
-            display: block;
         }
         .image-card .info {
             padding: 0.75rem;
         }
         .image-card .title {
-            font-size: 0.85rem;
-            color: #fff;
+            font-size: 0.8rem;
+            color: #ccc;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-        .image-card .source {
-            font-size: 0.7rem;
-            color: #666;
-            margin-top: 0.25rem;
         }
         
         /* VIDEOS GRID */
         .videos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1rem;
         }
         .video-card {
             background: rgba(255,255,255,0.05);
             border-radius: 12px;
             overflow: hidden;
-            transition: all 0.3s ease;
             cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         .video-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 30px rgba(124,58,237,0.2);
+            transform: translateY(-5px);
+            border-color: #7c3aed;
         }
-        .video-card .thumbnail {
+        .video-card .thumb-wrapper {
             position: relative;
+            width: 100%;
+            height: 160px;
+            background: #222;
         }
         .video-card img {
             width: 100%;
-            height: 180px;
+            height: 160px;
             object-fit: cover;
-            display: block;
         }
         .video-card .duration {
             position: absolute;
             bottom: 8px;
             right: 8px;
-            background: rgba(0,0,0,0.8);
-            padding: 2px 6px;
+            background: rgba(0,0,0,0.85);
+            padding: 2px 8px;
             border-radius: 4px;
             font-size: 0.75rem;
+            font-weight: 600;
         }
-        .video-card .play-btn {
+        .video-card .play-overlay {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(124,58,237,0.9);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .video-card:hover .play-overlay { opacity: 1; }
+        .video-card .play-btn {
+            background: #7c3aed;
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -179,17 +190,17 @@
         }
         .video-card .info { padding: 0.75rem; }
         .video-card .title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #fff;
-            font-weight: 600;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            line-height: 1.4;
         }
         .video-card .channel {
-            font-size: 0.75rem;
-            color: #888;
+            font-size: 0.7rem;
+            color: #666;
             margin-top: 0.5rem;
         }
         
@@ -200,6 +211,7 @@
             inset: 0;
             background: rgba(0,0,0,0.95);
             z-index: 1000;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 2rem;
@@ -207,9 +219,27 @@
         .lightbox.active { display: flex; }
         .lightbox img {
             max-width: 90%;
-            max-height: 90vh;
+            max-height: 85vh;
             border-radius: 8px;
+            object-fit: contain;
         }
+        .lightbox .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .lightbox .nav-btn:hover { background: rgba(255,255,255,0.2); }
+        .lightbox .prev { left: 1rem; }
+        .lightbox .next { right: 1rem; }
         .lightbox .close {
             position: absolute;
             top: 1rem;
@@ -231,13 +261,14 @@
             inset: 0;
             background: rgba(0,0,0,0.95);
             z-index: 1000;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 2rem;
         }
         .video-player.active { display: flex; }
         .video-player iframe {
-            width: 80%;
+            width: 90%;
             height: 80%;
             border-radius: 8px;
         }
@@ -320,16 +351,18 @@
         <div id="results" class="results"></div>
     </div>
     
-    <!-- Lightbox for images -->
-    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-        <button class="close">✕</button>
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="handleLightboxClick(event)">
+        <button class="close" onclick="closeLightbox()">✕</button>
+        <button class="nav-btn prev" onclick="prevImage(event)">❮</button>
         <img id="lightbox-img" src="" alt="Image">
+        <button class="nav-btn next" onclick="nextImage(event)">❯</button>
     </div>
     
     <!-- Video player -->
-    <div class="video-player" id="video-player" onclick="closeVideo()">
-        <button class="close">✕</button>
-        <iframe id="video-iframe" src="" frameborder="0" allowfullscreen></iframe>
+    <div class="video-player" id="video-player" onclick="closeVideo(event)">
+        <button class="close" onclick="closeVideo()">✕</button>
+        <iframe id="video-iframe" src="" frameborder="0" allowfullscreen allow="autoplay"></iframe>
     </div>
     
     <div class="footer">
@@ -339,6 +372,8 @@
     <script>
         const API_KEY = 'c16e7b0634206ae7f8faf87fa57feb554395bad8';
         let currentType = 'web';
+        let currentImages = [];
+        let currentImageIndex = 0;
         
         document.getElementById('search-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -368,7 +403,7 @@
                 const data = await response.json();
                 
                 if (data.searchInformation) {
-                    stats.innerHTML = `Encontrado em ${data.searchInformation.formattedSearchTime ? data.searchInformation.formattedSearchTime + 's' : '?'}`;
+                    stats.innerHTML = 'Encontrado em ' + (data.searchInformation.formattedSearchTime || '?') + 's';
                     stats.style.display = 'block';
                 }
                 
@@ -404,17 +439,22 @@
         
         function renderImageResults(data) {
             const results = document.getElementById('results');
-            if (!data.images || data.images.length === 0) {
+            currentImages = data.images || [];
+            currentImageIndex = 0;
+            
+            if (currentImages.length === 0) {
                 results.innerHTML = '<p style="color:#888;text-align:center">Nenhuma imagem encontrada</p>';
                 return;
             }
             
-            results.innerHTML = '<div class="images-grid">' + data.images.map((item, i) => `
-                <div class="image-card" onclick="openLightbox('${item.imageUrl}', ${i})">
-                    <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/250x200?text=No+Image'">
+            results.innerHTML = '<div class="images-grid">' + currentImages.map((item, index) => `
+                <div class="image-card" onclick="openLightbox(${index})">
+                    <div class="img-wrapper">
+                        <img src="${item.imageUrl}" alt="${item.title || 'Image'}" 
+                             onerror="this.style.display='none';this.parentElement.innerHTML='🖼️'">
+                    </div>
                     <div class="info">
                         <div class="title">${item.title || ''}</div>
-                        <div class="source">${item.source || ''}</div>
                     </div>
                 </div>
             `).join('') + '</div>';
@@ -422,16 +462,21 @@
         
         function renderVideoResults(data) {
             const results = document.getElementById('results');
-            if (!data.videos || data.videos.length === 0) {
+            const videos = data.videos || [];
+            
+            if (videos.length === 0) {
                 results.innerHTML = '<p style="color:#888;text-align:center">Nenhum vídeo encontrado</p>';
                 return;
             }
             
-            results.innerHTML = '<div class="videos-grid">' + data.videos.map(item => `
-                <div class="video-card" onclick="playVideo('${item.link}')">
-                    <div class="thumbnail">
-                        <img src="${item.thumbnail}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/300x180?text=No+Video'">
-                        <div class="play-btn">▶</div>
+            results.innerHTML = '<div class="videos-grid">' + videos.map(item => `
+                <div class="video-card" onclick="playVideo('${escapeHtml(item.link)}')">
+                    <div class="thumb-wrapper">
+                        <img src="${item.thumbnail}" alt="${item.title || 'Video'}"
+                             onerror="this.style.display='none'">
+                        <div class="play-overlay">
+                            <div class="play-btn">▶</div>
+                        </div>
                         ${item.duration ? `<div class="duration">${item.duration}</div>` : ''}
                     </div>
                     <div class="info">
@@ -459,35 +504,65 @@
             `).join('');
         }
         
+        function escapeHtml(text) {
+            return text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+        
         // Lightbox functions
-        function openLightbox(url, index) {
-            document.getElementById('lightbox-img').src = url;
+        function openLightbox(index) {
+            if (!currentImages[index]) return;
+            currentImageIndex = index;
+            document.getElementById('lightbox-img').src = currentImages[index].imageUrl;
             document.getElementById('lightbox').classList.add('active');
         }
         
         function closeLightbox() {
             document.getElementById('lightbox').classList.remove('active');
+            document.getElementById('lightbox-img').src = '';
         }
         
-        // Video player functions
+        function prevImage(e) {
+            e.stopPropagation();
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                document.getElementById('lightbox-img').src = currentImages[currentImageIndex].imageUrl;
+            }
+        }
+        
+        function nextImage(e) {
+            e.stopPropagation();
+            if (currentImageIndex < currentImages.length - 1) {
+                currentImageIndex++;
+                document.getElementById('lightbox-img').src = currentImages[currentImageIndex].imageUrl;
+            }
+        }
+        
+        function handleLightboxClick(e) {
+            if (e.target === document.getElementById('lightbox')) {
+                closeLightbox();
+            }
+        }
+        
+        // Video player
         function playVideo(link) {
-            // Convert YouTube link to embed
             let embedUrl = link;
             if (link.includes('youtube.com/watch')) {
                 const videoId = link.split('v=')[1]?.split('&')[0];
-                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                embedUrl = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
             } else if (link.includes('youtu.be/')) {
                 const videoId = link.split('youtu.be/')[1]?.split('?')[0];
-                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                embedUrl = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
             }
             
             document.getElementById('video-iframe').src = embedUrl;
             document.getElementById('video-player').classList.add('active');
         }
         
-        function closeVideo() {
-            document.getElementById('video-iframe').src = '';
-            document.getElementById('video-player').classList.remove('active');
+        function closeVideo(e) {
+            if (!e || e.target.id === 'video-player') {
+                document.getElementById('video-iframe').src = '';
+                document.getElementById('video-player').classList.remove('active');
+            }
         }
         
         function setTab(type) {
@@ -497,11 +572,14 @@
             });
         }
         
-        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeLightbox();
                 closeVideo();
+            } else if (e.key === 'ArrowLeft' && document.getElementById('lightbox').classList.contains('active')) {
+                prevImage(e);
+            } else if (e.key === 'ArrowRight' && document.getElementById('lightbox').classList.contains('active')) {
+                nextImage(e);
             }
         });
     </script>
