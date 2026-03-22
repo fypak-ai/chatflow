@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔍 Serper - Pesquisa</title>
+    <title>🔍 Serper + Torrent Search</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -48,7 +48,6 @@
             gap: 1rem;
             flex-wrap: wrap;
             margin-bottom: 1rem;
-            align-items: center;
         }
         .filters select {
             padding: 0.5rem;
@@ -85,6 +84,31 @@
         .result a:hover { text-decoration: underline; }
         .result .url { color: #3fb950; font-size: 0.85rem; margin: 0.5rem 0; }
         .result .snippet { color: #8b949e; line-height: 1.6; }
+        
+        .torrent-result {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .torrent-result .title { color: #e6edf3; font-weight: 600; margin-bottom: 0.5rem; }
+        .torrent-result .meta { color: #8b949e; font-size: 0.85rem; margin-bottom: 0.75rem; }
+        .torrent-result .meta span { margin-right: 1rem; }
+        .torrent-result .meta .seeds { color: #3fb950; }
+        .torrent-result .meta .leechers { color: #f85149; }
+        .torrent-btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            background: #238636;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+        }
+        .torrent-btn:hover { background: #2ea043; }
         
         .knowledge-panel {
             background: linear-gradient(135deg, #1f3d5c, #161b22);
@@ -167,8 +191,7 @@
             <div class="tab" data-type="suggestions" onclick="setTab('suggestions')">💡 Sugestões</div>
             <div class="tab" data-type="scholar" onclick="setTab('scholar')">📚 Acadêmico</div>
             <div class="tab" data-type="reviews" onclick="setTab('reviews')">⭐ Reviews</div>
-            <div class="tab" data-type="patents" onclick="setTab('patents')">💡 Patentes</div>
-            <div class="tab" data-type="maps" onclick="setTab('maps')">🗺️ Maps</div>
+            <div class="tab" data-type="torrent" onclick="setTab('torrent')">📥 Torrent</div>
         </div>
         
         <div id="error"></div>
@@ -181,6 +204,18 @@
         const API_KEY = 'c16e7b0634206ae7f8faf87fa57feb554395bad8';
         let currentType = 'search';
         
+        // Torrent sites to search
+        const torrentSites = [
+            { name: 'The Pirate Bay', url: 'https://thepiratebay.org/search/', magnet: true },
+            { name: '1337x', url: 'https://1337x.to/search/', magnet: true },
+            { name: 'RARBG', url: 'https://rarbg.to/torrents.php?search=', magnet: true },
+            { name: 'YTS', url: 'https://yts.mx/browse-movies/', magnet: true },
+            { name: 'LimeTorrents', url: 'https://www.limetorrents.to/search/', magnet: true },
+            { name: 'Torlock', url: 'https://www.torlock.com/', magnet: true },
+            { name: 'EZTV', url: 'https://eztv.re/search/', magnet: true },
+            { name: 'TorrentGalaxy', url: 'https://torrentgalaxy.to/', magnet: true }
+        ];
+        
         document.getElementById('search-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const query = document.getElementById('query').value;
@@ -191,6 +226,11 @@
             
             results.innerHTML = '<div class="loading">Carregando...</div>';
             error.innerHTML = '';
+            
+            if (currentType === 'torrent') {
+                renderTorrentResults(query, results);
+                return;
+            }
             
             try {
                 const language = document.getElementById('language').value.split(',')[0];
@@ -222,16 +262,14 @@
                 'places': 'places',
                 'suggestions': 'suggestions',
                 'scholar': 'scholar',
-                'reviews': 'search',
-                'patents': 'search',
-                'maps': 'maps'
+                'reviews': 'search'
             };
             return endpoints[type] || 'search';
         }
         
         function renderResults(data, container) {
             switch(currentType) {
-                case 'search': case 'reviews': case 'patents':
+                case 'search': case 'reviews':
                     renderSearch(data, container); break;
                 case 'images':
                     renderImages(data, container); break;
@@ -255,7 +293,6 @@
         function renderSearch(data, container) {
             let html = '';
             
-            // Knowledge Panel
             if (data.knowledgeGraph && currentType === 'search') {
                 const kg = data.knowledgeGraph;
                 html += '<div class="knowledge-panel">';
@@ -272,17 +309,6 @@
                 html += '</div>';
             }
             
-            // Reviews specific
-            if (currentType === 'reviews' && data.organic) {
-                html += '<h3 style="margin-bottom:1rem;color:#58a6ff">⭐ Avaliações e Reviews</h3>';
-            }
-            
-            // Patents specific
-            if (currentType === 'patents' && data.organic) {
-                html += '<h3 style="margin-bottom:1rem;color:#58a6ff">💡 Patentes e Inventos</h3>';
-            }
-            
-            // People Also Ask
             if (data.peopleAlsoAsk && currentType === 'search') {
                 data.peopleAlsoAsk.forEach(item => {
                     html += '<div class="paa-item" onclick="this.classList.toggle(\'open\')">';
@@ -291,7 +317,6 @@
                 });
             }
             
-            // Organic Results
             if (data.organic) {
                 data.organic.forEach(item => {
                     html += '<div class="result"><a href="' + item.link + '" target="_blank">' + item.title + '</a>';
@@ -300,7 +325,6 @@
                 });
             }
             
-            // Related Searches
             if (data.relatedSearches) {
                 html += '<div class="related">';
                 data.relatedSearches.forEach(item => {
@@ -310,6 +334,57 @@
             }
             
             container.innerHTML = html || '<div class="loading">Nenhum resultado encontrado</div>';
+        }
+        
+        function renderTorrentResults(query, container) {
+            let html = '<h3 style="margin-bottom:1rem;color:#58a6ff">📥 Buscando torrents para: ' + query + '</h3>';
+            
+            html += '<div class="result">';
+            html += '<p style="margin-bottom:1rem">Clique em um site para buscar:</p>';
+            
+            torrentSites.forEach(site => {
+                const searchUrl = site.url + encodeURIComponent(query);
+                html += '<a href="' + searchUrl + '" target="_blank" class="torrent-btn" style="margin:0.25rem;display:inline-block">' + site.name + '</a> ';
+            });
+            
+            html += '</div>';
+            html += '<div class="result">';
+            html += '<h4 style="color:#58a6ff;margin-bottom:0.75rem">💡 Dica: Como baixar</h4>';
+            html += '<ol style="color:#8b949e;line-height:1.8;padding-left:1.5rem">';
+            html += '<li>Clique em um dos sites acima</li>';
+            html += '<li>Procure pelo resultado desejado</li>';
+            html += '<li>Clique em "Magnet" ou "Get Torrent"</li>';
+            html += '<li>Abra o magnet link com seu cliente BitTorrent (qBittorrent, Transmission, etc)</li>';
+            html += '</ol>';
+            html += '</div>';
+            
+            // Also show Google results for torrent
+            html += '<div class="result"><h4 style="color:#58a6ff;margin-bottom:0.75rem">🔍 Resultados de busca</h4></div>';
+            
+            container.innerHTML = html;
+            
+            // Also do a search to show results
+            fetch('https://google.serper.dev/search', {
+                method: 'POST',
+                headers: { 'X-API-KEY': API_KEY, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ q: query + ' torrent', num: 10 })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.organic) {
+                    let resultsHtml = '';
+                    data.organic.forEach(item => {
+                        // Highlight torrent sites
+                        const isTorrent = item.link && (item.link.includes('torrent') || item.link.includes('magnet'));
+                        resultsHtml += '<div class="result" style="' + (isTorrent ? 'border-color:#238636' : '') + '">';
+                        resultsHtml += '<a href="' + item.link + '" target="_blank">' + item.title + '</a>';
+                        resultsHtml += '<div class="url">' + item.link + '</div>';
+                        resultsHtml += '<div class="snippet">' + (item.snippet || '') + '</div></div>';
+                    });
+                    container.innerHTML += resultsHtml;
+                }
+            })
+            .catch(err => console.log(err));
         }
         
         function renderImages(data, container) {
