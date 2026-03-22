@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatFlow - Your AI Workflows</title>
+    <title>🔍 Serper Search</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f23 100%);
             color: #fff;
             min-height: 100vh;
         }
         .header {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
             padding: 1.5rem 2rem;
+            text-align: center;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         .header h1 {
@@ -23,31 +24,20 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .header p { color: #888; margin-top: 0.5rem; }
-        
-        .config-btn {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        .config-btn:hover { background: rgba(255,255,255,0.2); }
-        
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 2rem;
         }
-        
-        .search-box { margin-bottom: 2rem; }
+        .search-box {
+            margin-bottom: 2rem;
+        }
+        .search-box form {
+            display: flex;
+            gap: 0.5rem;
+        }
         .search-box input {
-            width: 100%;
+            flex: 1;
             padding: 1rem 1.5rem;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
@@ -55,434 +45,329 @@
             color: #fff;
             font-size: 1rem;
         }
-        .search-box input:focus { outline: none; border-color: #00d4ff; }
+        .search-box input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+        .search-box button {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .search-box button:hover {
+            opacity: 0.9;
+        }
+        .search-box button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         
-        .category { margin-bottom: 2rem; }
-        .category h2 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
+        .tabs {
             display: flex;
-            align-items: center;
             gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #aaa;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background: linear-gradient(90deg, rgba(0,212,255,0.2), rgba(124,58,237,0.2));
+            color: #fff;
+            border-color: #00d4ff;
+        }
+        .tab:hover:not(.active) {
+            background: rgba(255,255,255,0.1);
         }
         
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
-        }
+        .results { margin-top: 1rem; }
         
-        .card {
+        .result {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 12px;
             padding: 1.25rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateY(-3px);
-            border-color: #00d4ff;
-        }
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 0.75rem;
-        }
-        .emoji { font-size: 1.5rem; }
-        .name { font-weight: 600; font-size: 0.95rem; }
-        .description { font-size: 0.8rem; color: #aaa; line-height: 1.5; }
-        .schedule {
-            margin-top: 0.75rem;
-            font-size: 0.7rem;
-            color: #00d4ff;
-            background: rgba(0,212,255,0.1);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            display: inline-block;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: #1a1a2e;
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 100%;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .modal h3 { font-size: 1.3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .modal p { color: #aaa; margin-bottom: 1rem; line-height: 1.6; }
-        .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            flex: 1;
+            margin-bottom: 1rem;
             transition: all 0.2s;
         }
-        .btn-primary {
-            background: linear-gradient(90deg, #00d4ff, #7c3aed);
-            color: #fff;
+        .result:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(0,212,255,0.3);
         }
-        .btn-primary:hover { opacity: 0.9; }
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
+        .result a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
-        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
-        
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: linear-gradient(90deg, #00d4ff, #7c3aed);
-            color: #fff;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            display: none;
-            animation: slideIn 0.3s ease;
-            z-index: 200;
+        .result a:hover {
+            text-decoration: underline;
         }
-        .toast.show { display: block; }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        .result .url {
+            color: #4ade80;
+            font-size: 0.85rem;
+            margin: 0.5rem 0;
         }
-        
-        .connection {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(0,0,0,0.5);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .status {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #22c55e;
-        }
-        .status.offline { background: #ef4444; }
-        
-        .config-modal input {
-            width: 100%;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05);
-            color: #fff;
+        .result .snippet {
+            color: #aaa;
+            line-height: 1.6;
             font-size: 0.9rem;
         }
-        .config-modal label {
-            display: block;
-            margin-bottom: 0.5rem;
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .image-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .image-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .image-card .title {
+            padding: 0.75rem;
+            font-size: 0.8rem;
             color: #aaa;
-            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .news-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .news-card .source {
+            color: #7c3aed;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .news-card .date {
+            color: #666;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+        .news-card a {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: block;
+            margin: 0.5rem 0;
+        }
+        .news-card a:hover {
+            color: #00d4ff;
         }
         
         .spinner {
             display: inline-block;
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
+            border-top-color: #00d4ff;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             margin-right: 0.5rem;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .error {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #ef4444;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .stats {
+            background: rgba(255,255,255,0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: #888;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
-    <button class="config-btn" onclick="openConfig()">⚙️ Config</button>
-    
-    <div class="connection">
-        <span class="status" id="status-dot"></span>
-        <span id="status-text">Conectando...</span>
-    </div>
-    
     <div class="header">
-        <h1>⚡ ChatFlow</h1>
-        <p>Automações inteligentes para o seu assistente de IA</p>
+        <h1>🔍 Serper Search</h1>
     </div>
     
     <div class="container">
         <div class="search-box">
-            <input type="text" id="search" placeholder="🔍 Buscar workflows..." onkeyup="filterWorkflows()">
+            <form id="search-form">
+                <input type="text" id="query" placeholder="O que você quer pesquisar?" required>
+                <button type="submit" id="search-btn">🔍 Pesquisar</button>
+            </form>
         </div>
         
-        <div class="category">
-            <h2>🏠 Casa Inteligente</h2>
-            <div class="grid" id="home"></div>
+        <div class="tabs">
+            <div class="tab active" data-type="web" onclick="setTab('web')">🌐 Web</div>
+            <div class="tab" data-type="images" onclick="setTab('images')">🖼️ Imagens</div>
+            <div class="tab" data-type="news" onclick="setTab('news')">📰 Notícias</div>
+            <div class="tab" data-type="videos" onclick="setTab('videos')">🎬 Vídeos</div>
         </div>
         
-        <div class="category">
-            <h2>📅 Produtividade</h2>
-            <div class="grid" id="productivity"></div>
-        </div>
-        
-        <div class="category">
-            <h2>📧 Comunicação</h2>
-            <div class="grid" id="communication"></div>
-        </div>
-        
-        <div class="category">
-            <h2>💰 Finanças</h2>
-            <div class="grid" id="finance"></div>
-        </div>
-        
-        <div class="category">
-            <h2>💪 Saúde & Hábitos</h2>
-            <div class="grid" id="health"></div>
-        </div>
+        <div id="stats" class="stats" style="display:none"></div>
+        <div id="error" class="error" style="display:none"></div>
+        <div id="results" class="results"></div>
     </div>
     
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <h3 id="modal-title">🛏️ Sleep Mode</h3>
-            <p id="modal-desc">Description here</p>
-            <div id="modal-schedule" class="schedule">Agendado: 10pm</div>
-            <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-                <button class="btn btn-primary" onclick="runWorkflow()" id="run-btn">▶ Executar Agora</button>
-            </div>
-        </div>
+    <div class="footer">
+        Powered by <a href="https://serper.dev" target="_blank" style="color:#00d4ff">Serper.dev</a>
     </div>
-    
-    <div class="modal" id="config-modal">
-        <div class="modal-content config-modal">
-            <h3>⚙️ Configuração</h3>
-            <label>Agent URL (Society AI ou webhook)</label>
-            <input type="text" id="agent-url" placeholder="https://seu-agent.society.ai ou webhook URL">
-            <label>API Key (opcional)</label>
-            <input type="password" id="api-key" placeholder="Sua API key">
-            <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="closeConfig()">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveConfig()">Salvar</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="toast" id="toast">✅ Sucesso!</div>
 
     <script>
-        const workflows = [
-            // Smart Home
-            { id: 'sleep-mode', name: 'activate-sleep-mode', emoji: '🛏️', desc: 'Desliga luzes, termostato e música para dormir', category: 'home', schedule: '10pm' },
-            { id: 'morning-mode', name: 'activate-morning-mode', emoji: '🌅', desc: 'Luzes intensas e música energizante para acordar', category: 'home', schedule: '9am' },
-            { id: 'night-mode', name: 'activate-night-mode', emoji: '🌙', desc: 'Luzes fracas e música relaxante para relaxing', category: 'home', schedule: '8pm' },
-            { id: 'focus-mode', name: 'activate-focus-mode', emoji: '🧘', desc: 'Ambiente ideal para trabalho profundo', category: 'home', schedule: '10am' },
-            { id: 'away-mode', name: 'activate-away-mode', emoji: '🚪', desc: 'Tudo desligado quando sair de casa', category: 'home', schedule: 'On-demand' },
-            
-            // Productivity
-            { id: 'morning-briefing', name: 'send-morning-briefing', emoji: '☀️', desc: 'Resumo do dia: clima, calendário, prioridades', category: 'productivity', schedule: '7am' },
-            { id: 'check-calendar', name: 'check-calendar', emoji: '📅', desc: 'Próximos 48h, conflitos e notas de preparação', category: 'productivity', schedule: '8am, 6pm' },
-            { id: 'plan-week', name: 'plan-week', emoji: '📝', desc: 'Planejamento semanal todo domingo', category: 'productivity', schedule: 'Sunday 6pm' },
-            { id: 'triage-tasks', name: 'triage-tasks', emoji: '✅', desc: 'Revisão matinal de tarefas', category: 'productivity', schedule: '8am' },
-            { id: 'review-week', name: 'review-week', emoji: '📊', desc: 'Resumo semanal de produtividade', category: 'productivity', schedule: 'Friday 5pm' },
-            
-            // Communication
-            { id: 'process-email', name: 'process-email', emoji: '📧', desc: 'Limpa inbox, desinscreve de newsletters', category: 'communication', schedule: '9am, 1pm, 5pm' },
-            { id: 'check-follow-ups', name: 'check-follow-ups', emoji: '🔔', desc: 'Emails não respondidos e follow-ups', category: 'communication', schedule: '9am, 4pm' },
-            { id: 'check-messages', name: 'check-messages', emoji: '💬', desc: 'Unifica Slack, Discord, WhatsApp, Telegram', category: 'communication', schedule: '9am, 12pm, 3pm, 6pm' },
-            { id: 'check-x', name: 'check-x', emoji: '🐦', desc: 'Verifica notifications do X/Twitter', category: 'communication', schedule: '10am, 5pm' },
-            
-            // Finance
-            { id: 'check-bills', name: 'check-bills', emoji: '🧾', desc: 'Contas a pagar e vencimentos', category: 'finance', schedule: 'Monday 8am' },
-            { id: 'check-subscriptions', name: 'check-subscriptions', emoji: '💳', desc: 'Assinaturas esquecidas', category: 'finance', schedule: 'Monday 9am' },
-            { id: 'track-budget', name: 'track-budget', emoji: '💰', desc: 'Controle semanal de gastos', category: 'finance', schedule: 'Friday 6pm' },
-            
-            // Health
-            { id: 'track-habits', name: 'track-habits', emoji: '📊', desc: 'Rastreia hábitos diários com weekly scorecard', category: 'health', schedule: '9pm' },
-            { id: 'track-water', name: 'track-water', emoji: '💧', desc: 'Lembretes de hidratação', category: 'health', schedule: '9am, 12pm, 3pm, 6pm' },
-            { id: 'track-sleep', name: 'track-sleep', emoji: '😴', desc: 'Registro de sono', category: 'health', schedule: '9pm' },
-            { id: 'mental-health', name: 'mental-health-checkin', emoji: '🧠', desc: 'Check-in diário de humor', category: 'health', schedule: '6pm' },
-            { id: 'stretch', name: 'stretch-reminder', emoji: '🧘', desc: 'Lembretes para alongar', category: 'health', schedule: '10am, 2pm, 4pm' },
-        ];
+        const API_KEY = 'c16e7b0634206ae7f8faf87fa57feb554395bad8';
+        let currentType = 'web';
         
-        let currentWorkflow = null;
-        let config = JSON.parse(localStorage.getItem('chatflow_config') || '{"agentUrl":"https://societyai.com/agents/multi-agent","agentId":"multi-agent"}');
-        
-        function render() {
-            const categories = {
-                home: document.getElementById('home'),
-                productivity: document.getElementById('productivity'),
-                communication: document.getElementById('communication'),
-                finance: document.getElementById('finance'),
-                health: document.getElementById('health')
-            };
+        document.getElementById('search-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = document.getElementById('query').value;
+            const btn = document.getElementById('search-btn');
+            const results = document.getElementById('results');
+            const error = document.getElementById('error');
+            const stats = document.getElementById('stats');
             
-            Object.values(categories).forEach(el => el.innerHTML = '');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Pesquisando...';
+            error.style.display = 'none';
+            results.innerHTML = '';
             
-            workflows.forEach(w => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.setAttribute('data-name', w.name.toLowerCase());
-                card.onclick = () => openModal(w);
-                card.innerHTML = `
-                    <div class="card-header">
-                        <span class="emoji">${w.emoji}</span>
-                        <span class="name">${w.name}</span>
-                    </div>
-                    <p class="description">${w.desc}</p>
-                    <span class="schedule">⏰ ${w.schedule}</span>
-                `;
-                if (categories[w.category]) {
-                    categories[w.category].appendChild(card);
+            try {
+                const response = await fetch(`https://google.serper.dev/${currentType}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-API-KEY': API_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ q: query })
+                });
+                
+                if (!response.ok) throw new Error('Erro na API: ' + response.status);
+                
+                const data = await response.json();
+                
+                // Show stats
+                if (data.searchInformation) {
+                    stats.innerHTML = `Encontrado em ${data.searchInformation.formattedSearchTime ? data.searchInformation.formattedSearchTime + 's' : '?'}`;
+                    stats.style.display = 'block';
                 }
-            });
-        }
+                
+                // Render results based on type
+                if (currentType === 'web') {
+                    renderWebResults(data);
+                } else if (currentType === 'images') {
+                    renderImageResults(data);
+                } else if (currentType === 'news') {
+                    renderNewsResults(data);
+                } else if (currentType === 'videos') {
+                    renderVideoResults(data);
+                }
+                
+            } catch (err) {
+                error.textContent = err.message;
+                error.style.display = 'block';
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '🔍 Pesquisar';
+        });
         
-        function filterWorkflows() {
-            const search = document.getElementById('search').value.toLowerCase();
-            document.querySelectorAll('.card').forEach(card => {
-                const name = card.getAttribute('data-name');
-                card.style.display = name.includes(search) ? '' : 'none';
-            });
-        }
-        
-        function openModal(w) {
-            currentWorkflow = w;
-            document.getElementById('modal-title').innerHTML = `${w.emoji} ${w.name}`;
-            document.getElementById('modal-desc').textContent = w.desc;
-            document.getElementById('modal-schedule').textContent = `⏰ Agendado: ${w.schedule}`;
-            document.getElementById('modal').classList.add('active');
-            document.getElementById('run-btn').innerHTML = '▶ Executar Agora';
-            document.getElementById('run-btn').disabled = false;
-        }
-        
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-        }
-        
-        async function runWorkflow() {
-            if (!config.agentUrl) {
-                showToast('⚠️ Configure o Agent URL primeiro!');
-                openConfig();
+        function renderWebResults(data) {
+            const results = document.getElementById('results');
+            if (!data.organic || data.organic.length === 0) {
+                results.innerHTML = '<p style="color:#888;text-align:center">Nenhum resultado encontrado</p>';
                 return;
             }
             
-            const btn = document.getElementById('run-btn');
-            btn.innerHTML = '<span class="spinner"></span> Executando...';
-            btn.disabled = true;
-            
-            try {
-                const message = `Por favor, execute o workflow: ${currentWorkflow.name}`;
-                
-                // Try Society AI API first
-                if (config.agentUrl.includes('society.ai') || config.agentUrl.includes('19791')) {
-                    const response = await fetch(config.agentUrl + '/api/delegate-task', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            agent_id: config.agentId || 'multi-agent',
-                            skill_id: 'chat',
-                            message: message
-                        })
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        showToast(`✅ ${currentWorkflow.name} executado!`);
-                    } else {
-                        throw new Error('API error');
-                    }
-                } else {
-                    // Try as webhook
-                    await fetch(config.agentUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            workflow: currentWorkflow.name,
-                            message: message
-                        })
-                    });
-                    showToast(`✅ ${currentWorkflow.name} executado!`);
-                }
-            } catch (error) {
-                console.error(error);
-                showToast(`✅ ${currentWorkflow.name} acionado! (Agent será notificado)`);
+            results.innerHTML = data.organic.map(item => `
+                <div class="result">
+                    <a href="${item.link}" target="_blank">${item.title}</a>
+                    <div class="url">${item.link}</div>
+                    <div class="snippet">${item.snippet || ''}</div>
+                </div>
+            `).join('');
+        }
+        
+        function renderImageResults(data) {
+            const results = document.getElementById('results');
+            if (!data.images || data.images.length === 0) {
+                results.innerHTML = '<p style="color:#888;text-align:center">Nenhuma imagem encontrada</p>';
+                return;
             }
             
-            btn.innerHTML = '▶ Executar Agora';
-            btn.disabled = false;
-            closeModal();
+            results.innerHTML = '<div class="image-grid">' + data.images.map(item => `
+                <div class="image-card">
+                    <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/200x150?text=No+Image'">
+                    <div class="title">${item.title || ''}</div>
+                </div>
+            `).join('') + '</div>';
         }
         
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-        
-        function openConfig() {
-            document.getElementById('agent-url').value = config.agentUrl || '';
-            document.getElementById('api-key').value = config.apiKey || '';
-            document.getElementById('config-modal').classList.add('active');
-        }
-        
-        function closeConfig() {
-            document.getElementById('config-modal').classList.remove('active');
-        }
-        
-        function saveConfig() {
-            config = {
-                agentUrl: document.getElementById('agent-url').value,
-                apiKey: document.getElementById('api-key').value,
-                agentId: document.getElementById('agent-url').value.includes('society') ? 'multi-agent' : ''
-            };
-            localStorage.setItem('chatflow_config', JSON.stringify(config));
-            closeConfig();
-            showToast('✅ Configuração salva!');
-            updateStatus();
-        }
-        
-        function updateStatus() {
-            const statusDot = document.getElementById('status-dot');
-            const statusText = document.getElementById('status-text');
-            
-            if (config.agentUrl) {
-                statusDot.classList.remove('offline');
-                statusText.textContent = 'Configurado';
-            } else {
-                statusDot.classList.add('offline');
-                statusText.textContent = 'Não configurado';
+        function renderNewsResults(data) {
+            const results = document.getElementById('results');
+            if (!data.news || data.news.length === 0) {
+                results.innerHTML = '<p style="color:#888;text-align:center">Nenhuma notícia encontrada</p>';
+                return;
             }
+            
+            results.innerHTML = data.news.map(item => `
+                <div class="news-card">
+                    <span class="source">${item.source}</span>
+                    <span class="date">${item.date || ''}</span>
+                    <a href="${item.link}" target="_blank">${item.title}</a>
+                    <div class="snippet">${item.snippet || ''}</div>
+                </div>
+            `).join('');
         }
         
-        document.getElementById('modal').addEventListener('click', (e) => {
-            if (e.target.id === 'modal') closeModal();
-        });
+        function renderVideoResults(data) {
+            const results = document.getElementById('results');
+            if (!data.videos || data.videos.length === 0) {
+                results.innerHTML = '<p style="color:#888;text-align:center">Nenhum vídeo encontrado</p>';
+                return;
+            }
+            
+            results.innerHTML = data.videos.map(item => `
+                <div class="result">
+                    <a href="${item.link}" target="_blank">🎬 ${item.title}</a>
+                    <div class="url">${item.channel} • ${item.duration || ''}</div>
+                </div>
+            `).join('');
+        }
         
-        document.getElementById('config-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'config-modal') closeConfig();
-        });
-        
-        render();
-        updateStatus();
+        function setTab(type) {
+            currentType = type;
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.type === type);
+            });
+        }
     </script>
 </body>
 </html>
